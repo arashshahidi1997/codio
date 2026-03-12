@@ -8,7 +8,9 @@ from codio.models import (
     RegistrySnapshot,
     ValidationResult,
 )
+from codio.paths import find_project_root
 from codio.registry import Registry, load_catalog, load_profiles
+from codio.scaffold import ScaffoldResult, init_codio_scaffold
 from codio.vocab import (
     DecisionDefault,
     Kind,
@@ -29,9 +31,12 @@ __all__ = [
     "Registry",
     "RegistrySnapshot",
     "RuntimeImport",
+    "ScaffoldResult",
     "Status",
     "ValidationResult",
+    "find_project_root",
     "get_vocab",
+    "init_codio_scaffold",
     "load_catalog",
     "load_config",
     "load_profiles",

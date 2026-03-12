@@ -2,3 +2,45 @@ site_name: codio
 docs_dir: docs
 theme:
   name: material
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Tutorials:
+      - tutorials/index.md
+      - Quickstart: tutorials/quickstart.md
+  - How-To Guides:
+      - how-to/index.md
+      - Initialize a registry: how-to/init.md
+      - Search for libraries: how-to/discover.md
+      - Study and compare: how-to/study.md
+      - Maintain the registry: how-to/maintain.md
+      - JSON output: how-to/json-output.md
+  - Explanation:
+      - explanation/index.md
+      - Two-layer registry model: explanation/registry-model.md
+      - Library kinds and policies: explanation/library-kinds.md
+      - Discovery-first engineering: explanation/discovery-first.md
+  - Reference:
+      - reference/index.md
+      - CLI commands: reference/cli.md
+      - Configuration: reference/configuration.md
+      - Workspace layout: reference/workspace.md
+  - Specs:
+      - specs/codio/codio-overview.md
+      - specs/codio/codio-concepts.md
+      - specs/codio/codio-goals.md
+      - specs/codio/codio-workflow.md
+      - specs/codio/codio-architecture.md
+      - specs/codio/codio-registry-schema.md
+      - specs/codio/codio-mcp-tools.md
+      - specs/codio/codio-agent-skills.md

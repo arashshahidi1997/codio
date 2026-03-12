@@ -1,0 +1,1662 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Codio Implementation Plan - codio</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#codio-implementation-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="codio" class="md-header__button md-logo" aria-label="codio" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            codio
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Codio Implementation Plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="codio" class="md-nav__button md-logo" aria-label="codio" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    codio
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../tutorials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../how-to/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How-To Guides
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    How-To Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how-to/init/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Initialize a registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how-to/discover/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Search for libraries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how-to/study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Study and compare
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how-to/maintain/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maintain the registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../how-to/json-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    JSON output
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../explanation/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explanation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Explanation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../explanation/registry-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-layer registry model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../explanation/library-kinds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Library kinds and policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../explanation/discovery-first/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery-first engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/workspace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workspace layout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../specs/codio/codio-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../specs/codio/codio-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../specs/codio/codio-goals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio Goals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../specs/codio/codio-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../specs/codio/codio-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../specs/codio/codio-registry-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio Registry Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../specs/codio/codio-mcp-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio MCP Tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../specs/codio/codio-agent-skills/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio Agent Skills
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-1-core-data-models-registry-foundation-must-complete-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Core Data Models &amp; Registry (foundation — must complete first)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 1: Core Data Models &amp; Registry (foundation — must complete first)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1a-controlled-vocabulary-srccodiovocabpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1A: Controlled Vocabulary (src/codio/vocab.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1b-data-models-srccodiomodelspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1B: Data Models (src/codio/models.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1c-registry-loader-srccodioregistrypy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1C: Registry Loader (src/codio/registry.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1d-default-registry-paths-config-srccodioconfigpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1D: Default Registry Paths &amp; Config (src/codio/config.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-2-mcp-tools-parallelizable-after-phase-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: MCP Tools (parallelizable after Phase 1)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 2: MCP Tools (parallelizable after Phase 1)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#srccodiomcppy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        src/codio/mcp.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-3-agent-skills-parallelizable-after-phase-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Agent Skills (parallelizable after Phase 1)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 3: Agent Skills (parallelizable after Phase 1)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#3a-srccodioskillsdiscoverypy-codelib-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3A: src/codio/skills/discovery.py — codelib-discovery
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3b-srccodioskillsupdatepy-codelib-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3B: src/codio/skills/update.py — codelib-update
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3c-srccodioskillsstudypy-library-study" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3C: src/codio/skills/study.py — library-study
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-4-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 4: Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#teststest_vocabpy-vocabulary-enum-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tests/test_vocab.py — vocabulary enum coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#teststest_modelspy-model-creation-validation-serialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tests/test_models.py — model creation, validation, serialization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#teststest_registrypy-loading-filtering-merging-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tests/test_registry.py — loading, filtering, merging, validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#teststest_mcppy-mcp-tool-outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tests/test_mcp.py — MCP tool outputs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#teststest_skillspy-skill-functions-with-fixture-registries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tests/test_skills.py — skill functions with fixture registries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dependency-additions-to-pyprojecttoml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency Additions to pyproject.toml
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-tree-new-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Tree (new files)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parallelization-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parallelization Strategy
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="codio-implementation-plan">Codio Implementation Plan<a class="headerlink" href="#codio-implementation-plan" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Implement the Codio subsystem as a Python package (<code>src/codio/</code>) following the spec in <code>docs/specs/codio/</code>. The implementation is split into four phases, with Phase 1 as the foundation and Phases 2-3 parallelizable on top of it.</p>
+<hr />
+<h2 id="phase-1-core-data-models-registry-foundation-must-complete-first">Phase 1: Core Data Models &amp; Registry (foundation — must complete first)<a class="headerlink" href="#phase-1-core-data-models-registry-foundation-must-complete-first" title="Permanent link">&para;</a></h2>
+<h3 id="1a-controlled-vocabulary-srccodiovocabpy">1A: Controlled Vocabulary (<code>src/codio/vocab.py</code>)<a class="headerlink" href="#1a-controlled-vocabulary-srccodiovocabpy" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Define enums/literals for <code>kind</code>, <code>runtime_import</code>, <code>decision_default</code>, <code>priority</code>, <code>status</code></li>
+<li>Provide a <code>get_vocab()</code> function returning all allowed values with descriptions</li>
+</ul>
+<h3 id="1b-data-models-srccodiomodelspy">1B: Data Models (<code>src/codio/models.py</code>)<a class="headerlink" href="#1b-data-models-srccodiomodelspy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>LibraryCatalogEntry</code> — Pydantic model for catalog identity: name, kind, repo_url, language, pip_name, license, path, summary</li>
+<li><code>ProjectProfileEntry</code> — Pydantic model for project profile: priority, runtime_import, decision_default, curated_note, capabilities, status, notes</li>
+<li><code>LibraryRecord</code> — merged view combining catalog + profile for a single library</li>
+<li><code>RegistrySnapshot</code> — full registry payload (all catalogs + profiles + metadata)</li>
+</ul>
+<h3 id="1c-registry-loader-srccodioregistrypy">1C: Registry Loader (<code>src/codio/registry.py</code>)<a class="headerlink" href="#1c-registry-loader-srccodioregistrypy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>load_catalog(path)</code> — parse YAML catalog file into dict of <code>LibraryCatalogEntry</code></li>
+<li><code>load_profiles(path)</code> — parse YAML profiles file into dict of <code>ProjectProfileEntry</code></li>
+<li><code>Registry</code> class — holds loaded catalog + profiles, provides:</li>
+<li><code>list(filters)</code> — filtered library listing</li>
+<li><code>get(name)</code> — single merged record</li>
+<li><code>snapshot()</code> — full registry payload</li>
+<li><code>validate()</code> — consistency checks (missing refs, bad vocab, broken note paths)</li>
+</ul>
+<h3 id="1d-default-registry-paths-config-srccodioconfigpy">1D: Default Registry Paths &amp; Config (<code>src/codio/config.py</code>)<a class="headerlink" href="#1d-default-registry-paths-config-srccodioconfigpy" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Default paths for catalog and profile YAML files</li>
+<li>Configuration loading from <code>.projio/config.yml</code> if present</li>
+</ul>
+<p><strong>Dependencies:</strong> PyYAML, Pydantic</p>
+<hr />
+<h2 id="phase-2-mcp-tools-parallelizable-after-phase-1">Phase 2: MCP Tools (parallelizable after Phase 1)<a class="headerlink" href="#phase-2-mcp-tools-parallelizable-after-phase-1" title="Permanent link">&para;</a></h2>
+<h3 id="srccodiomcppy"><code>src/codio/mcp.py</code><a class="headerlink" href="#srccodiomcppy" title="Permanent link">&para;</a></h3>
+<p>Implement MCP tool functions that wrap the Registry:</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>codio_list</code></td>
+<td><code>mcp_list(filters)</code></td>
+<td>Filtered library listing</td>
+</tr>
+<tr>
+<td><code>codio_get</code></td>
+<td><code>mcp_get(name)</code></td>
+<td>Full merged record for one library</td>
+</tr>
+<tr>
+<td><code>codio_registry</code></td>
+<td><code>mcp_registry()</code></td>
+<td>Full registry snapshot</td>
+</tr>
+<tr>
+<td><code>codio_vocab</code></td>
+<td><code>mcp_vocab()</code></td>
+<td>Controlled vocabulary dump</td>
+</tr>
+<tr>
+<td><code>codio_validate</code></td>
+<td><code>mcp_validate()</code></td>
+<td>Registry consistency validation</td>
+</tr>
+</tbody>
+</table>
+<p>Each function returns structured dict/JSON output suitable for agent consumption.</p>
+<hr />
+<h2 id="phase-3-agent-skills-parallelizable-after-phase-1">Phase 3: Agent Skills (parallelizable after Phase 1)<a class="headerlink" href="#phase-3-agent-skills-parallelizable-after-phase-1" title="Permanent link">&para;</a></h2>
+<p>Three skill modules, each independent:</p>
+<h3 id="3a-srccodioskillsdiscoverypy-codelib-discovery">3A: <code>src/codio/skills/discovery.py</code> — <code>codelib-discovery</code><a class="headerlink" href="#3a-srccodioskillsdiscoverypy-codelib-discovery" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>discover(query, registry)</code> — translate capability query into filtered registry search</li>
+<li>Return ranked candidates with evidence summary and recommended decision</li>
+</ul>
+<h3 id="3b-srccodioskillsupdatepy-codelib-update">3B: <code>src/codio/skills/update.py</code> — <code>codelib-update</code><a class="headerlink" href="#3b-srccodioskillsupdatepy-codelib-update" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>add_library(catalog_entry, profile_entry, registry)</code> — add/update catalog + profile</li>
+<li><code>refresh_note(name, registry)</code> — validate/refresh curated note reference</li>
+<li><code>validate_registry(registry)</code> — wrapper around registry validate</li>
+</ul>
+<h3 id="3c-srccodioskillsstudypy-library-study">3C: <code>src/codio/skills/study.py</code> — <code>library-study</code><a class="headerlink" href="#3c-srccodioskillsstudypy-library-study" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>study_library(name, registry, sources)</code> — structured analysis of a single library</li>
+<li><code>compare_libraries(names, registry)</code> — comparative summary across candidates</li>
+<li>Output: capability summary, entry points, caveats, integration notes</li>
+</ul>
+<hr />
+<h2 id="phase-4-tests">Phase 4: Tests<a class="headerlink" href="#phase-4-tests" title="Permanent link">&para;</a></h2>
+<h3 id="teststest_vocabpy-vocabulary-enum-coverage"><code>tests/test_vocab.py</code> — vocabulary enum coverage<a class="headerlink" href="#teststest_vocabpy-vocabulary-enum-coverage" title="Permanent link">&para;</a></h3>
+<h3 id="teststest_modelspy-model-creation-validation-serialization"><code>tests/test_models.py</code> — model creation, validation, serialization<a class="headerlink" href="#teststest_modelspy-model-creation-validation-serialization" title="Permanent link">&para;</a></h3>
+<h3 id="teststest_registrypy-loading-filtering-merging-validation"><code>tests/test_registry.py</code> — loading, filtering, merging, validation<a class="headerlink" href="#teststest_registrypy-loading-filtering-merging-validation" title="Permanent link">&para;</a></h3>
+<h3 id="teststest_mcppy-mcp-tool-outputs"><code>tests/test_mcp.py</code> — MCP tool outputs<a class="headerlink" href="#teststest_mcppy-mcp-tool-outputs" title="Permanent link">&para;</a></h3>
+<h3 id="teststest_skillspy-skill-functions-with-fixture-registries"><code>tests/test_skills.py</code> — skill functions with fixture registries<a class="headerlink" href="#teststest_skillspy-skill-functions-with-fixture-registries" title="Permanent link">&para;</a></h3>
+<hr />
+<h2 id="dependency-additions-to-pyprojecttoml">Dependency Additions to <code>pyproject.toml</code><a class="headerlink" href="#dependency-additions-to-pyprojecttoml" title="Permanent link">&para;</a></h2>
+<pre><code class="language-toml">dependencies = [&quot;pyyaml&gt;=6.0&quot;, &quot;pydantic&gt;=2.0&quot;]
+</code></pre>
+<hr />
+<h2 id="file-tree-new-files">File Tree (new files)<a class="headerlink" href="#file-tree-new-files" title="Permanent link">&para;</a></h2>
+<pre><code>src/codio/
+├── __init__.py          (update: re-export public API)
+├── vocab.py             (Phase 1A)
+├── models.py            (Phase 1B)
+├── registry.py          (Phase 1C)
+├── config.py            (Phase 1D)
+├── mcp.py               (Phase 2)
+└── skills/
+    ├── __init__.py       (Phase 3)
+    ├── discovery.py      (Phase 3A)
+    ├── update.py         (Phase 3B)
+    └── study.py          (Phase 3C)
+tests/
+├── test_codio.py        (existing)
+├── conftest.py          (shared fixtures)
+├── test_vocab.py        (Phase 4)
+├── test_models.py       (Phase 4)
+├── test_registry.py     (Phase 4)
+├── test_mcp.py          (Phase 4)
+└── test_skills.py       (Phase 4)
+</code></pre>
+<h2 id="parallelization-strategy">Parallelization Strategy<a class="headerlink" href="#parallelization-strategy" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Phase 1A + 1D</strong> can run in parallel (no interdependency)</li>
+<li><strong>Phase 1B</strong> depends on 1A (models use vocab enums)</li>
+<li><strong>Phase 1C</strong> depends on 1B (registry uses models)</li>
+<li><strong>Phase 2 and Phase 3 (all three skills)</strong> can run in parallel once Phase 1 is complete — that's <strong>4 parallel agents</strong></li>
+<li><strong>Phase 4 tests</strong> can be split per-module and run in parallel</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.indexes", "content.code.copy"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1625 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Codio Maintenance Prompts - codio</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#codio-maintenance-prompts" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="codio" class="md-header__button md-logo" aria-label="codio" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            codio
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Codio Maintenance Prompts
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="codio" class="md-nav__button md-logo" aria-label="codio" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    codio
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../tutorials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../how-to/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How-To Guides
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    How-To Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/init/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Initialize a registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/discover/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Search for libraries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/study/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Study and compare
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/maintain/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maintain the registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/json-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    JSON output
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../explanation/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explanation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Explanation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/registry-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Two-layer registry model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/library-kinds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Library kinds and policies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/discovery-first/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Discovery-first engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../reference/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/workspace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workspace layout
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../specs/codio/codio-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../specs/codio/codio-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../specs/codio/codio-goals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio Goals
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../specs/codio/codio-workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio Workflow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../specs/codio/codio-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../specs/codio/codio-registry-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio Registry Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../specs/codio/codio-mcp-tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio MCP Tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../specs/codio/codio-agent-skills/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Codio Agent Skills
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#m1-cli-scaffold-templates-foundation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M1 — CLI + Scaffold + Templates (Foundation)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="M1 — CLI + Scaffold + Templates (Foundation)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-scaffold-srccodioscaffoldpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Scaffold (src/codio/scaffold.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-cli-srccodioclipy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. CLI (src/codio/cli.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-entry-point-in-pyprojecttoml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Entry point in pyproject.toml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-create-storage2arashprojectsprojiosrcprojiomcpcodiopy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Create /storage2/arash/projects/projio/src/projio/mcp/codio.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-register-in-serverpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Register in server.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-update-projios-pyprojecttoml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Update projio's pyproject.toml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-update-projio-config-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Update projio config template
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-srccodioragpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. src/codio/rag.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-add-cli-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Add CLI command
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="codio-maintenance-prompts">Codio Maintenance Prompts<a class="headerlink" href="#codio-maintenance-prompts" title="Permanent link">&para;</a></h1>
+<p>Reusable prompts for common Codio development and maintenance tasks.
+Copy a prompt below into a new Claude Code session.</p>
+<p>Codio is a <strong>tool for arbitrary projects</strong> — it scaffolds <code>.codio/</code> in target
+projects and provides CLI + MCP tools for code reuse discovery. It follows the
+same patterns as its siblings <code>biblio</code> (papers) and <code>projio</code> (project orchestration).</p>
+<hr />
+<h2 id="m1-cli-scaffold-templates-foundation">M1 — CLI + Scaffold + Templates (Foundation)<a class="headerlink" href="#m1-cli-scaffold-templates-foundation" title="Permanent link">&para;</a></h2>
+<p>Add the user-facing shell to codio: CLI entry point, scaffold system, and YAML
+templates. This is the foundation that all other features build on.</p>
+<pre><code>Read the Codio specs in docs/specs/codio/ and the existing implementation in src/codio/.
+
+Also study the sibling projects for patterns to follow:
+- biblio scaffold: /storage2/arash/projects/biblio/src/biblio/scaffold.py
+- biblio CLI:      /storage2/arash/projects/biblio/src/biblio/cli.py
+- projio init:     /storage2/arash/projects/projio/src/projio/init.py
+- projio CLI:      /storage2/arash/projects/projio/src/projio/cli.py
+
+Implement the following, matching the biblio/projio patterns:
+
+### 1. Templates (src/codio/templates/)
+
+Create YAML templates that `codio init` will write into target projects:
+
+**src/codio/templates/codio/catalog.yml.tmpl**
+```yaml
+# Codio library catalog — project-agnostic identity metadata
+# See: codio vocab --field kind  for allowed values
+libraries: {}
+</code></pre>
+<p><strong>src/codio/templates/codio/profiles.yml.tmpl</strong></p>
+<pre><code class="language-yaml"># Codio project profiles — local policy for each library
+# See: codio vocab --field priority  for allowed values
+profiles: {}
+</code></pre>
+<h3 id="2-scaffold-srccodioscaffoldpy">2. Scaffold (src/codio/scaffold.py)<a class="headerlink" href="#2-scaffold-srccodioscaffoldpy" title="Permanent link">&para;</a></h3>
+<p>Follow biblio's scaffold.py pattern exactly:
+- Use importlib.resources to locate templates
+- ScaffoldResult dataclass with root + files_written
+- init_codio_scaffold(project_root, *, force=False) -&gt; ScaffoldResult
+- Strip .tmpl suffix, write to .codio/ in target project
+- Skip existing files unless force=True
+- Also create the notes directory (from config.DEFAULT_NOTES_DIR)</p>
+<h3 id="3-cli-srccodioclipy">3. CLI (src/codio/cli.py)<a class="headerlink" href="#3-cli-srccodioclipy" title="Permanent link">&para;</a></h3>
+<p>Argparse-based CLI following biblio's pattern. Commands:</p>
+<p>codio init [--root DIR] [--force]
+      Scaffold .codio/ in a project (catalog.yml, profiles.yml, notes dir)</p>
+<p>codio list [--root DIR] [--kind KIND] [--language LANG] [--capability CAP] [--priority TIER] [--json]
+      List libraries from registry with optional filters</p>
+<p>codio get NAME [--root DIR] [--json]
+      Show full merged record for a single library</p>
+<p>codio validate [--root DIR] [--json]
+      Run consistency checks on registry</p>
+<p>codio vocab [--field FIELD] [--json]
+      Show controlled vocabulary (all fields or a specific one)</p>
+<p>codio discover QUERY [--root DIR] [--language LANG] [--json]
+      Search for libraries matching a capability query</p>
+<p>codio study NAME [--root DIR] [--json]
+      Structured analysis of a library</p>
+<p>codio compare NAME [NAME ...] [--root DIR] [--query QUERY] [--json]
+      Compare multiple libraries</p>
+<p>All commands that read the registry should:
+- Auto-detect project root (walk up to find .codio/ or .projio/)
+- Support --root override
+- Support --json for machine-readable output
+- Print human-readable tables/text by default</p>
+<h3 id="4-entry-point-in-pyprojecttoml">4. Entry point in pyproject.toml<a class="headerlink" href="#4-entry-point-in-pyprojecttoml" title="Permanent link">&para;</a></h3>
+<p>Add to [project.scripts]:
+  codio = "codio.cli:main"</p>
+<p>Also add to [tool.setuptools.package-data]:
+  codio = ["templates/*<em>/</em>.tmpl"]</p>
+<h3 id="5-tests">5. Tests<a class="headerlink" href="#5-tests" title="Permanent link">&para;</a></h3>
+<p>Add tests in tests/test_cli.py:
+- test_init_creates_scaffold (tmp_path)
+- test_init_force_overwrites
+- test_list_empty_registry
+- test_list_with_filters (use conftest fixtures)
+- test_get_existing and test_get_missing
+- test_validate
+- test_vocab
+- test_discover
+- test_cli_json_flag (verify JSON output parses)</p>
+<p>Run: make test</p>
+<pre><code>
+---
+
+## M2 — Projio MCP Integration
+
+Wire codio tools into projio's MCP server so Claude agents can query the
+registry via structured tool calls.
+
+</code></pre>
+<p>Read the existing codio MCP functions: /storage2/arash/projects/codio/src/codio/mcp.py
+Read projio's MCP server and how it integrates biblio:
+- /storage2/arash/projects/projio/src/projio/mcp/server.py
+- /storage2/arash/projects/projio/src/projio/mcp/biblio.py
+- /storage2/arash/projects/projio/src/projio/mcp/rag.py</p>
+<p>Add codio tools to projio's MCP server:</p>
+<h3 id="1-create-storage2arashprojectsprojiosrcprojiomcpcodiopy">1. Create /storage2/arash/projects/projio/src/projio/mcp/codio.py<a class="headerlink" href="#1-create-storage2arashprojectsprojiosrcprojiomcpcodiopy" title="Permanent link">&para;</a></h3>
+<p>Register these tools on the FastMCP server:
+- codio_list(kind, language, capability, priority, runtime_import) -&gt; filtered listing
+- codio_get(name) -&gt; full merged record
+- codio_registry() -&gt; full snapshot
+- codio_vocab() -&gt; controlled vocabulary
+- codio_validate() -&gt; validation results
+- codio_discover(query, language) -&gt; discovery candidates + recommendation</p>
+<p>Each tool should:
+- Load config from PROJIO_ROOT env var (like rag.py does)
+- Construct a codio Registry from config paths
+- Call the corresponding codio.mcp function
+- Return JSON-serializable dict</p>
+<h3 id="2-register-in-serverpy">2. Register in server.py<a class="headerlink" href="#2-register-in-serverpy" title="Permanent link">&para;</a></h3>
+<p>Import and register the codio tools in the FastMCP server, following
+the same conditional pattern used for biblio (try import, skip if unavailable).</p>
+<h3 id="3-update-projios-pyprojecttoml">3. Update projio's pyproject.toml<a class="headerlink" href="#3-update-projios-pyprojecttoml" title="Permanent link">&para;</a></h3>
+<p>Add codio to optional dependencies:
+  codio = ["codio"]</p>
+<h3 id="4-update-projio-config-template">4. Update projio config template<a class="headerlink" href="#4-update-projio-config-template" title="Permanent link">&para;</a></h3>
+<p>Add a codio section to BASE_PROJIO_CONFIG in projio/init.py:
+  codio:
+    enabled: true
+    catalog_path: .codio/catalog.yml
+    profiles_path: .codio/profiles.yml
+    notes_dir: docs/reference/codelib/libraries/</p>
+<p>Run projio tests: cd /storage2/arash/projects/projio &amp;&amp; make test
+Run codio tests: cd /storage2/arash/projects/codio &amp;&amp; make test</p>
+<pre><code>
+---
+
+## M3 — Indexio Integration (Code Corpus)
+
+Register codio-owned sources in indexio so code and library docs are
+searchable via RAG.
+
+</code></pre>
+<p>Read indexio's sync_owned_sources pattern:
+- /storage2/arash/projects/indexio/src/indexio/edit.py
+- /storage2/arash/projects/projio/src/projio/mcp/rag.py</p>
+<p>Add a <code>codio rag sync</code> CLI command that registers codio-owned sources
+in the project's indexio config:</p>
+<h3 id="1-srccodioragpy">1. src/codio/rag.py<a class="headerlink" href="#1-srccodioragpy" title="Permanent link">&para;</a></h3>
+<p>def sync_codio_rag_sources(project_root: Path, config: CodioConfig) -&gt; dict:
+    - Build source list from registry:
+      - source_id="codio-notes", corpus="codelib", glob=notes_dir/*<em>/</em>.md
+      - source_id="codio-catalog", corpus="codelib", path=catalog_path
+    - Call indexio.sync_owned_sources() with owned_source_ids=["codio-notes", "codio-catalog"]
+    - Return sync result</p>
+<h3 id="2-add-cli-command">2. Add CLI command<a class="headerlink" href="#2-add-cli-command" title="Permanent link">&para;</a></h3>
+<p>codio rag sync [--root DIR]
+      Register codio sources in indexio config</p>
+<h3 id="3-tests">3. Tests<a class="headerlink" href="#3-tests" title="Permanent link">&para;</a></h3>
+<p>Test that sync_codio_rag_sources produces correct source configs.
+Mock indexio.sync_owned_sources if indexio is not installed.</p>
+<p>Run: make test</p>
+<pre><code>
+---
+
+## M4 — Onboard a Library (Operational)
+
+Use after M1 is complete. This is for onboarding libraries into a target
+project's `.codio/` registry.
+
+</code></pre>
+<p>Read the target project's .codio/catalog.yml and .codio/profiles.yml.
+Read src/codio/vocab.py for allowed values.</p>
+<p>Onboard the following library:</p>
+<ul>
+<li>Name: <LIBRARY_SLUG></li>
+<li>Kind: <internal | external_mirror | utility></li>
+<li>Language: <language></li>
+<li>Repo URL: <url or empty></li>
+<li>Pip name: <package name or empty></li>
+<li>Summary: <one-line description></li>
+</ul>
+<p>Project profile:
+- Priority: <tier1 | tier2 | tier3>
+- Runtime import: <internal | pip_only | reference_only>
+- Decision default: <existing | wrap | direct | new>
+- Capabilities: <comma-separated tags></p>
+<p>Steps:
+1. Add catalog entry to .codio/catalog.yml
+2. Add profile entry to .codio/profiles.yml
+3. Run <code>codio validate --root &lt;project&gt;</code> to confirm consistency
+4. If tier1/tier2, create curated note at docs/reference/codelib/libraries/<name>.md
+5. Run tests if in the codio repo: make test</p>
+<pre><code>
+---
+
+## M5 — Write/Refresh a Curated Library Note
+
+</code></pre>
+<p>Read the target project's .codio/ registry and the library's source code or docs.</p>
+<p>Write (or refresh) the curated note for: <LIBRARY_NAME>
+Location: docs/reference/codelib/libraries/<LIBRARY_NAME>.md</p>
+<p>Cover:
+- Scope: what it does and doesn't do
+- Strengths: why it's in the registry
+- Caveats: limitations, version constraints
+- Entry points: key modules/functions/classes
+- Integration pattern: how this project uses it (wrap, direct, internal)
+- Example usage snippet</p>
+<p>Run <code>codio validate</code> when done.</p>
+<pre><code>
+---
+
+## M6 — Registry Health Check
+
+</code></pre>
+<p>Read the target project's .codio/ registry files.</p>
+<p>Perform a full health check:
+1. Run codio validate (or the Python validation)
+2. Check every tier1/tier2 library has a curated note on disk
+3. Check every library with a local path has code at that path
+4. List libraries with no capabilities in their profile
+5. Summarize findings and suggest fixes
+```</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.indexes", "content.code.copy"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

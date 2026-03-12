@@ -12,8 +12,14 @@ authors = [{ name = "" }]
 license = { text = "MIT" }
 dependencies = ["pyyaml>=6.0", "pydantic>=2.0"]
 
+[project.scripts]
+codio = "codio.cli:main"
+
 [project.optional-dependencies]
 dev = ["pytest", "build", "twine"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+codio = ["templates/**/*.tmpl"]
