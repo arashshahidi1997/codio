@@ -1,0 +1,17 @@
+pyproject.toml
+src/codio/__init__.py
+src/codio/config.py
+src/codio/mcp.py
+src/codio/models.py
+src/codio/registry.py
+src/codio/vocab.py
+src/codio.egg-info/PKG-INFO
+src/codio.egg-info/SOURCES.txt
+src/codio.egg-info/dependency_links.txt
+src/codio.egg-info/requires.txt
+src/codio.egg-info/top_level.txt
+src/codio/skills/__init__.py
+src/codio/skills/discovery.py
+src/codio/skills/study.py
+src/codio/skills/update.py
+tests/test_codio.py
