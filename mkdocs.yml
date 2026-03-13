@@ -27,6 +27,7 @@ nav:
       - JSON output: how-to/json-output.md
   - Explanation:
       - explanation/index.md
+      - Ecosystem Links: explanation/ecosystem-links.md
       - Two-layer registry model: explanation/registry-model.md
       - Library kinds and policies: explanation/library-kinds.md
       - Discovery-first engineering: explanation/discovery-first.md
