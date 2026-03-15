@@ -38,9 +38,22 @@ def _iter_template_files(root: Traversable) -> Iterator[Tuple[Path, Traversable]
     return _recurse(root, Path())
 
 
-def init_codio_scaffold(project_root: str | Path, *, force: bool = False) -> ScaffoldResult:
-    """Scaffold ``.codio/`` in *project_root* with starter YAML templates."""
+def init_codio_scaffold(
+    project_root: str | Path,
+    *,
+    target_dir: str | Path | None = None,
+    force: bool = False,
+) -> ScaffoldResult:
+    """Scaffold codio registry files with starter YAML templates.
+
+    *target_dir* overrides the default ``.codio/`` location.  When called
+    from ``projio add codio``, this is typically ``.projio/codio/``.
+    """
     project_root = Path(project_root).expanduser().resolve()
+    codio_dir = Path(target_dir) if target_dir is not None else project_root / ".codio"
+    if not codio_dir.is_absolute():
+        codio_dir = project_root / codio_dir
+
     tpl_root = _template_dir()
     if not tpl_root.is_dir():
         raise FileNotFoundError(
@@ -51,7 +64,7 @@ def init_codio_scaffold(project_root: str | Path, *, force: bool = False) -> Sca
     for rel, entry in _iter_template_files(tpl_root):
         if rel.name.endswith(".tmpl"):
             rel = rel.with_suffix("")
-        dest = project_root / ".codio" / rel
+        dest = codio_dir / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
         if dest.exists() and not force:
             continue
@@ -59,8 +72,8 @@ def init_codio_scaffold(project_root: str | Path, *, force: bool = False) -> Sca
         dest.write_bytes(data)
         files_written.append(dest)
 
-    # Ensure .codio/ exists even if everything already present.
-    (project_root / ".codio").mkdir(exist_ok=True)
+    # Ensure dir exists even if everything already present.
+    codio_dir.mkdir(parents=True, exist_ok=True)
     # Also create the notes directory.
     (project_root / DEFAULT_NOTES_DIR).mkdir(parents=True, exist_ok=True)
 

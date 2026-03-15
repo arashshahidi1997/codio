@@ -1,0 +1,2 @@
+[console_scripts]
+codio = codio.cli:main
