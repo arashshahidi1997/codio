@@ -69,6 +69,41 @@ class Status(_DescribedEnum):
     deprecated = ("deprecated", "Scheduled for removal")
 
 
+class Storage(_DescribedEnum):
+    """Repository storage mode."""
+
+    managed = ("managed", "Codio-cloned and updated mirror")
+    attached = ("attached", "Existing repo on filesystem, codio records path only")
+    external = ("external", "No local clone, metadata only")
+
+
+class Hosting(_DescribedEnum):
+    """Repository hosting provider."""
+
+    github = ("github", "Hosted on GitHub")
+    gitlab = ("gitlab", "Hosted on GitLab")
+    local = ("local", "Local-only repository")
+    other = ("other", "Other hosting provider")
+
+
+class SourceType(_DescribedEnum):
+    """Code source unit type."""
+
+    package = ("package", "Importable Python package or equivalent")
+    module = ("module", "Single module or file")
+    tree = ("tree", "Directory tree")
+    notebook = ("notebook", "Jupyter notebook or similar")
+    config = ("config", "Configuration files")
+
+
+class AddedBy(_DescribedEnum):
+    """How a registry entry was added."""
+
+    manual = ("manual", "Added by hand or via CLI")
+    discovery = ("discovery", "Added via codio discover workflow")
+    import_ = ("import", "Imported from external source")
+
+
 # ---------------------------------------------------------------------------
 # Registry
 # ---------------------------------------------------------------------------
@@ -79,6 +114,10 @@ _VOCABS: dict[str, type[_DescribedEnum]] = {
     "decision_default": DecisionDefault,
     "priority": Priority,
     "status": Status,
+    "storage": Storage,
+    "hosting": Hosting,
+    "source_type": SourceType,
+    "added_by": AddedBy,
 }
 
 

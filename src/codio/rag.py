@@ -8,7 +8,7 @@ from codio.config import CodioConfig, load_config
 
 CODIO_NOTES_SOURCE_ID = "codio-notes"
 CODIO_CATALOG_SOURCE_ID = "codio-catalog"
-CODIO_OWNED_SOURCE_IDS = (CODIO_NOTES_SOURCE_ID, CODIO_CATALOG_SOURCE_ID)
+CODIO_SRC_PREFIX = "codio-src-"
 
 
 @dataclass(frozen=True)
@@ -21,9 +21,28 @@ class CodioRagSyncResult:
     removed: tuple[str, ...]
 
 
-def owned_codio_sources(config: CodioConfig) -> list[dict[str, object]]:
-    """Return the list of codio-owned source definitions for indexio."""
-    return [
+def _source_id_for_library(name: str) -> str:
+    """Return the indexio source ID for a library's source tree."""
+    return f"{CODIO_SRC_PREFIX}{name}"
+
+
+def resolve_source_id(source_id: str) -> str | None:
+    """Map an indexio source ID back to a library name, or None."""
+    if source_id.startswith(CODIO_SRC_PREFIX):
+        return source_id[len(CODIO_SRC_PREFIX):]
+    return None
+
+
+def owned_codio_sources(
+    config: CodioConfig,
+    catalog: dict | None = None,
+) -> list[dict[str, object]]:
+    """Return the list of codio-owned source definitions for indexio.
+
+    When *catalog* is provided (dict of name -> LibraryCatalogEntry),
+    source trees for libraries with non-empty ``path`` fields are included.
+    """
+    sources: list[dict[str, object]] = [
         {
             "id": CODIO_NOTES_SOURCE_ID,
             "corpus": "codelib",
@@ -36,6 +55,32 @@ def owned_codio_sources(config: CodioConfig) -> list[dict[str, object]]:
         },
     ]
 
+    if catalog:
+        for name, entry in catalog.items():
+            if not entry.path:
+                continue
+            lib_path = config.project_root / entry.path
+            if not lib_path.exists():
+                continue
+            sources.append({
+                "id": _source_id_for_library(name),
+                "corpus": "codelib",
+                "glob": str(lib_path / "**/*.py"),
+                "metadata": {"library": name, "kind": entry.kind},
+            })
+
+    return sources
+
+
+def owned_source_ids(catalog: dict | None = None) -> list[str]:
+    """Return all codio-owned source IDs (for sync_owned_sources)."""
+    ids = [CODIO_NOTES_SOURCE_ID, CODIO_CATALOG_SOURCE_ID]
+    if catalog:
+        for name, entry in catalog.items():
+            if entry.path:
+                ids.append(_source_id_for_library(name))
+    return ids
+
 
 def sync_codio_rag_sources(
     project_root: Path,
@@ -43,8 +88,12 @@ def sync_codio_rag_sources(
     *,
     config_path: Path | None = None,
     force_init: bool = False,
+    catalog: dict | None = None,
 ) -> CodioRagSyncResult:
     """Register codio-owned sources in the project's indexio config.
+
+    When *catalog* is provided, source trees for libraries with local
+    paths are included alongside the standard notes and catalog sources.
 
     Raises ``ImportError`` if the indexio package is not installed.
     """
@@ -65,8 +114,8 @@ def sync_codio_rag_sources(
     result = sync_owned_sources(
         config_path,
         root=project_root,
-        owned_source_ids=list(CODIO_OWNED_SOURCE_IDS),
-        sources=owned_codio_sources(config),
+        owned_source_ids=owned_source_ids(catalog),
+        sources=owned_codio_sources(config, catalog),
         force_init=force_init,
     )
 

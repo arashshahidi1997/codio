@@ -19,8 +19,9 @@ def test_init_creates_scaffold(tmp_path):
     result = init_codio_scaffold(tmp_path)
     assert (tmp_path / ".codio" / "catalog.yml").exists()
     assert (tmp_path / ".codio" / "profiles.yml").exists()
+    assert (tmp_path / ".codio" / "repos.yml").exists()
     assert (tmp_path / "docs" / "reference" / "codelib" / "libraries").is_dir()
-    assert len(result.files_written) == 2
+    assert len(result.files_written) == 3
 
 
 def test_init_skips_existing(tmp_path):
@@ -35,7 +36,7 @@ def test_init_force_overwrites(tmp_path):
     cat = tmp_path / ".codio" / "catalog.yml"
     cat.write_text("modified")
     result = init_codio_scaffold(tmp_path, force=True)
-    assert len(result.files_written) == 2
+    assert len(result.files_written) == 3
     assert "modified" not in cat.read_text()
 
 
@@ -237,3 +238,112 @@ def test_cli_json_compare(tmp_project, capsys):
     out = capsys.readouterr().out
     data = json.loads(out)
     assert "libraries" in data
+
+
+# ---------------------------------------------------------------------------
+# CLI add-urls
+# ---------------------------------------------------------------------------
+
+
+def test_add_urls_single(tmp_project, capsys, monkeypatch):
+    """add-urls registers a library from a GitHub URL."""
+    monkeypatch.setattr(
+        "codio.cli._fetch_github_meta",
+        lambda url: {
+            "description": "A wave analysis toolbox",
+            "language": "Python",
+            "license": {"spdx_id": "MIT"},
+            "topics": ["neuroscience", "waves"],
+        },
+    )
+    main(["add-urls", "https://github.com/BrainDynamicsUSYD/NeuroPattToolbox", "--root", str(tmp_project)])
+    out = capsys.readouterr().out
+    assert "neuropatttoolbox" in out
+    assert "Added 1" in out
+
+    # Verify it's in the registry
+    main(["get", "neuropatttoolbox", "--root", str(tmp_project), "--json"])
+    out = capsys.readouterr().out
+    data = json.loads(out)
+    assert data["name"] == "neuropatttoolbox"
+    assert data["kind"] == "external_mirror"
+    assert data["repo_url"] == "https://github.com/BrainDynamicsUSYD/NeuroPattToolbox"
+    assert data["license"] == "MIT"
+    assert data["status"] == "candidate"
+    assert "neuroscience" in data["capabilities"]
+
+
+def test_add_urls_multiple(tmp_project, capsys, monkeypatch):
+    """add-urls handles multiple URLs in one call."""
+    monkeypatch.setattr("codio.cli._fetch_github_meta", lambda url: {})
+    main([
+        "add-urls",
+        "https://github.com/mullerlab/generalized-phase",
+        "https://github.com/preraulab/multitaper_toolbox",
+        "--root", str(tmp_project),
+    ])
+    out = capsys.readouterr().out
+    assert "generalized_phase" in out
+    assert "multitaper_toolbox" in out
+    assert "Added 2" in out
+
+
+def test_add_urls_skip_existing(tmp_project, capsys, monkeypatch):
+    """add-urls skips URLs whose library name already exists."""
+    monkeypatch.setattr("codio.cli._fetch_github_meta", lambda url: {"language": "Python"})
+    # Add first
+    main(["add-urls", "https://github.com/owner/some-lib", "--root", str(tmp_project)])
+    capsys.readouterr()
+    # Add again — should skip
+    main(["add-urls", "https://github.com/owner/some-lib", "--root", str(tmp_project)])
+    out = capsys.readouterr().out
+    assert "already in registry" in out
+    assert "Added 0" in out
+
+
+def test_add_urls_json(tmp_project, capsys, monkeypatch):
+    """add-urls --json returns structured output."""
+    monkeypatch.setattr("codio.cli._fetch_github_meta", lambda url: {"language": "MATLAB"})
+    main([
+        "add-urls",
+        "https://github.com/navvab-afrashteh/OFAMM",
+        "--root", str(tmp_project),
+        "--json",
+    ])
+    out = capsys.readouterr().out
+    data = json.loads(out)
+    assert len(data) == 1
+    assert data[0]["status"] == "added"
+    assert data[0]["name"] == "ofamm"
+
+    # Verify MATLAB → reference_only
+    main(["get", "ofamm", "--root", str(tmp_project), "--json"])
+    out = capsys.readouterr().out
+    rec = json.loads(out)
+    assert rec["runtime_import"] == "reference_only"
+    assert rec["decision_default"] == "new"
+
+
+def test_add_urls_bad_url(tmp_project, capsys, monkeypatch):
+    """add-urls handles unparseable URLs gracefully."""
+    monkeypatch.setattr("codio.cli._fetch_github_meta", lambda url: {})
+    main(["add-urls", "not-a-url", "--root", str(tmp_project)])
+    out = capsys.readouterr().out
+    assert "cannot parse" in out
+    assert "Added 0" in out
+
+
+def test_add_urls_repos_yml(tmp_project, capsys, monkeypatch):
+    """add-urls creates repo entries in repos.yml."""
+    monkeypatch.setattr("codio.cli._fetch_github_meta", lambda url: {})
+    main(["add-urls", "https://github.com/scipy/scipy", "--root", str(tmp_project)])
+    capsys.readouterr()
+
+    import yaml
+    repos_path = tmp_project / ".codio" / "repos.yml"
+    assert repos_path.exists()
+    with open(repos_path) as f:
+        data = yaml.safe_load(f)
+    assert "scipy--scipy" in data["repositories"]
+    assert data["repositories"]["scipy--scipy"]["hosting"] == "github"
+    assert data["repositories"]["scipy--scipy"]["storage"] == "external"

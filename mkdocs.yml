@@ -28,6 +28,9 @@ nav:
   - Explanation:
       - explanation/index.md
       - Ecosystem Links: explanation/ecosystem-links.md
+      - Vision: explanation/vision.md
+      - Code intelligence: explanation/code-intelligence.md
+      - Cross-project sharing: explanation/cross-project-sharing.md
       - Two-layer registry model: explanation/registry-model.md
       - Library kinds and policies: explanation/library-kinds.md
       - Discovery-first engineering: explanation/discovery-first.md
@@ -36,8 +39,14 @@ nav:
       - CLI commands: reference/cli.md
       - Configuration: reference/configuration.md
       - Workspace layout: reference/workspace.md
+      - Entity model: reference/entity-model.md
+      - Library workspace layout: reference/library-layout.md
+      - Ingestion: reference/ingestion.md
   - Specs:
       - specs/codio/codio-overview.md
+      - specs/codio/codio-current-state.md
+      - specs/codio/codio-roadmap.md
+      - specs/codio/codio-design-review.md
       - specs/codio/codio-concepts.md
       - specs/codio/codio-goals.md
       - specs/codio/codio-workflow.md

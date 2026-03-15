@@ -64,6 +64,63 @@ def _build_parser() -> argparse.ArgumentParser:
     p_cmp.add_argument("--query", default="")
     p_cmp.add_argument("--json", dest="as_json", action="store_true")
 
+    # --- add ----------------------------------------------------------------
+    p_add = sub.add_parser("add", help="Add a library to the registry")
+    p_add.add_argument("name", help="Library slug")
+    p_add.add_argument("--kind", required=True, help="Library kind")
+    p_add.add_argument("--language", default="", help="Dominant language")
+    p_add.add_argument("--repo-url", dest="repo_url", default="", help="Upstream URL")
+    p_add.add_argument("--pip-name", dest="pip_name", default="", help="Package name")
+    p_add.add_argument("--path", default="", help="Local path")
+    p_add.add_argument("--summary", default="", help="Short description")
+    p_add.add_argument("--repo-id", dest="repo_id", default="", help="FK to repos.yml")
+    p_add.add_argument("--priority", default="tier2")
+    p_add.add_argument("--runtime-import", dest="runtime_import", default="reference_only")
+    p_add.add_argument("--decision-default", dest="decision_default", default="new")
+    p_add.add_argument("--capabilities", default="", help="Comma-separated capability tags")
+    p_add.add_argument("--root", type=Path, default=None)
+    p_add.add_argument("--json", dest="as_json", action="store_true")
+
+    # --- add-urls -----------------------------------------------------------
+    p_addurls = sub.add_parser("add-urls", help="Add libraries from git URLs")
+    p_addurls.add_argument("urls", nargs="+", metavar="URL", help="Git repository URLs")
+    p_addurls.add_argument("--clone", action="store_true", help="Also clone as managed mirrors")
+    p_addurls.add_argument("--shallow", action="store_true", help="Shallow clone (--depth 1)")
+    p_addurls.add_argument("--branch", default="main", help="Default branch")
+    p_addurls.add_argument("--root", type=Path, default=None)
+    p_addurls.add_argument("--json", dest="as_json", action="store_true")
+
+    # --- attach -------------------------------------------------------------
+    p_attach = sub.add_parser("attach", help="Attach an existing repo to the registry")
+    p_attach.add_argument("repo_id", help="Repository slug (e.g. owner--repo)")
+    p_attach.add_argument("local_path", help="Path to existing repo on disk")
+    p_attach.add_argument("--url", default="", help="Remote URL (optional)")
+    p_attach.add_argument("--hosting", default="local", help="Hosting provider")
+    p_attach.add_argument("--branch", default="main", help="Default branch")
+    p_attach.add_argument("--root", type=Path, default=None)
+    p_attach.add_argument("--json", dest="as_json", action="store_true")
+
+    # --- clone --------------------------------------------------------------
+    p_clone = sub.add_parser("clone", help="Clone a repo as a managed mirror")
+    p_clone.add_argument("url", help="Repository clone URL")
+    p_clone.add_argument("--repo-id", dest="repo_id", default="", help="Override slug")
+    p_clone.add_argument("--branch", default="main", help="Default branch")
+    p_clone.add_argument("--shallow", action="store_true", help="Shallow clone (--depth 1)")
+    p_clone.add_argument("--root", type=Path, default=None)
+    p_clone.add_argument("--json", dest="as_json", action="store_true")
+
+    # --- sync ---------------------------------------------------------------
+    p_sync = sub.add_parser("sync", help="Pull updates for managed mirrors")
+    p_sync.add_argument("repo_id", nargs="?", default=None, help="Specific repo to sync")
+    p_sync.add_argument("--root", type=Path, default=None)
+    p_sync.add_argument("--json", dest="as_json", action="store_true")
+
+    # --- repos --------------------------------------------------------------
+    p_repos = sub.add_parser("repos", help="List tracked repositories")
+    p_repos.add_argument("--storage", default=None, help="Filter by storage mode")
+    p_repos.add_argument("--root", type=Path, default=None)
+    p_repos.add_argument("--json", dest="as_json", action="store_true")
+
     # --- rag ----------------------------------------------------------------
     p_rag = sub.add_parser("rag", help="Manage codio-owned RAG sources")
     rag_sub = p_rag.add_subparsers(dest="rag_cmd", required=True)
@@ -246,15 +303,374 @@ def _cmd_compare(args: argparse.Namespace) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Ingestion handlers
+# ---------------------------------------------------------------------------
+
+def _cmd_add(args: argparse.Namespace) -> None:
+    from codio.models import LibraryCatalogEntry, ProjectProfileEntry
+    from codio.skills.update import add_library
+
+    root = _resolve_root(args)
+    registry = _make_registry(root)
+
+    catalog_entry = LibraryCatalogEntry(
+        name=args.name,
+        kind=args.kind,
+        language=args.language,
+        repo_url=args.repo_url,
+        pip_name=args.pip_name,
+        path=args.path,
+        summary=args.summary,
+        repo_id=args.repo_id,
+        added_by="manual",
+        added_date=_today(),
+    )
+    caps = [c.strip() for c in args.capabilities.split(",") if c.strip()] if args.capabilities else []
+    profile_entry = ProjectProfileEntry(
+        name=args.name,
+        priority=args.priority,
+        runtime_import=args.runtime_import,
+        decision_default=args.decision_default,
+        capabilities=caps,
+    )
+    add_library(registry, catalog_entry, profile_entry)
+
+    if args.as_json:
+        _json_out({"added": args.name})
+    else:
+        print(f"Added library '{args.name}' to registry.")
+
+
+def _cmd_add_urls(args: argparse.Namespace) -> None:
+    import re
+    import subprocess
+
+    from codio.config import load_config
+    from codio.models import LibraryCatalogEntry, ProjectProfileEntry, RepositoryEntry
+    from codio.registry import load_repos, save_repos
+    from codio.skills.update import add_library
+
+    root = _resolve_root(args)
+    config = load_config(root)
+    registry = _make_registry(root)
+    repos = load_repos(config.repos_path)
+
+    results = []
+    for url in args.urls:
+        url = url.strip()
+        if not url:
+            continue
+
+        # Derive repo_id from URL
+        m = re.search(r"[/:]([^/:]+)/([^/.]+?)(?:\.git)?$", url)
+        if not m:
+            results.append({"url": url, "status": "error", "reason": "cannot parse URL"})
+            continue
+        repo_id = f"{m.group(1)}--{m.group(2)}".lower()
+        # Library name: just the repo part, lowercased with underscores
+        lib_name = m.group(2).lower().replace("-", "_")
+
+        # Skip if already in catalog
+        if lib_name in registry._catalog:
+            results.append({"url": url, "name": lib_name, "status": "exists"})
+            continue
+
+        hosting = _guess_hosting(url)
+
+        # Fetch metadata from GitHub API if applicable
+        gh_meta = _fetch_github_meta(url) if hosting == "github" else {}
+
+        language = gh_meta.get("language", "").lower()
+        summary = gh_meta.get("description", "") or ""
+        license_name = ""
+        if gh_meta.get("license") and isinstance(gh_meta["license"], dict):
+            license_name = gh_meta["license"].get("spdx_id", "") or ""
+        pip_name = ""
+        # For Python repos, guess pip name from repo name
+        if language == "python":
+            pip_name = m.group(2).lower()
+
+        # Determine runtime_import from language
+        if language in ("python",):
+            runtime_import = "pip_only"
+        else:
+            runtime_import = "reference_only"
+
+        catalog_entry = LibraryCatalogEntry(
+            name=lib_name,
+            kind="external_mirror",
+            language=language,
+            repo_url=url,
+            pip_name=pip_name,
+            license=license_name,
+            summary=summary[:200] if summary else "",
+            repo_id=repo_id,
+            added_by="import",
+            added_date=_today(),
+        )
+
+        # GitHub topics → capability tags
+        topics = gh_meta.get("topics", []) or []
+        caps = [t for t in topics if t] if topics else []
+
+        profile_entry = ProjectProfileEntry(
+            name=lib_name,
+            priority="tier2",
+            runtime_import=runtime_import,
+            decision_default="wrap" if language in ("python",) else "new",
+            capabilities=caps,
+            status="candidate",
+        )
+
+        add_library(registry, catalog_entry, profile_entry)
+
+        # Register repo entry
+        storage = "external"
+        local_path = ""
+
+        if args.clone:
+            clone_dir = config.mirrors_dir / repo_id
+            if not clone_dir.exists():
+                clone_cmd = ["git", "clone"]
+                if args.shallow:
+                    clone_cmd += ["--depth", "1"]
+                clone_cmd += ["-b", args.branch, url, str(clone_dir)]
+                try:
+                    subprocess.run(clone_cmd, check=True, capture_output=True, text=True)
+                    storage = "managed"
+                    local_path = str(clone_dir.relative_to(config.project_root))
+                except subprocess.CalledProcessError:
+                    # Clone failed — still register as external
+                    pass
+            else:
+                storage = "managed"
+                local_path = str(clone_dir.relative_to(config.project_root))
+
+        repo_entry = RepositoryEntry(
+            repo_id=repo_id,
+            url=url,
+            hosting=hosting,
+            storage=storage,
+            local_path=local_path,
+            default_branch=args.branch,
+        )
+        repos[repo_id] = repo_entry
+
+        results.append({"url": url, "name": lib_name, "status": "added", "repo_id": repo_id})
+
+    save_repos(config.repos_path, repos)
+
+    if args.as_json:
+        _json_out(results)
+    else:
+        for r in results:
+            if r["status"] == "added":
+                print(f"  + {r['name']:<30s} {r['url']}")
+            elif r["status"] == "exists":
+                print(f"  = {r['name']:<30s} already in registry")
+            else:
+                print(f"  ! {r['url']:<30s} {r.get('reason', 'error')}")
+        added = [r for r in results if r["status"] == "added"]
+        print(f"\nAdded {len(added)} librar{'y' if len(added) == 1 else 'ies'}.")
+
+
+def _fetch_github_meta(url: str) -> dict:
+    """Fetch repository metadata from GitHub API. Returns {} on failure."""
+    import re
+    m = re.search(r"github\.com/([^/]+)/([^/.]+?)(?:\.git)?$", url)
+    if not m:
+        return {}
+    owner, repo = m.group(1), m.group(2)
+    try:
+        import urllib.request
+        import json as _json
+        req = urllib.request.Request(
+            f"https://api.github.com/repos/{owner}/{repo}",
+            headers={"Accept": "application/vnd.github.v3+json", "User-Agent": "codio"},
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return _json.loads(resp.read())
+    except Exception:
+        return {}
+
+
+def _cmd_attach(args: argparse.Namespace) -> None:
+    from codio.config import load_config
+    from codio.models import RepositoryEntry
+    from codio.registry import load_repos, save_repos
+
+    root = _resolve_root(args)
+    config = load_config(root)
+
+    entry = RepositoryEntry(
+        repo_id=args.repo_id,
+        url=args.url,
+        hosting=args.hosting,
+        storage="attached",
+        local_path=args.local_path,
+        default_branch=args.branch,
+    )
+
+    repos = load_repos(config.repos_path)
+    repos[args.repo_id] = entry
+    save_repos(config.repos_path, repos)
+
+    if args.as_json:
+        _json_out({"attached": args.repo_id, "local_path": args.local_path})
+    else:
+        print(f"Attached repository '{args.repo_id}' at {args.local_path}")
+
+
+def _cmd_clone(args: argparse.Namespace) -> None:
+    import re
+    import subprocess
+
+    from codio.config import load_config
+    from codio.models import RepositoryEntry
+    from codio.registry import load_repos, save_repos
+
+    root = _resolve_root(args)
+    config = load_config(root)
+
+    # Derive repo_id from URL if not provided
+    repo_id = args.repo_id
+    if not repo_id:
+        # Extract owner/repo from URL
+        m = re.search(r"[/:]([^/:]+)/([^/.]+?)(?:\.git)?$", args.url)
+        if m:
+            repo_id = f"{m.group(1)}--{m.group(2)}".lower()
+        else:
+            print("Cannot derive repo_id from URL. Use --repo-id.", file=sys.stderr)
+            raise SystemExit(1)
+
+    clone_dir = config.mirrors_dir / repo_id
+    if clone_dir.exists():
+        print(f"Mirror directory already exists: {clone_dir}", file=sys.stderr)
+        raise SystemExit(1)
+
+    # Record metadata first
+    entry = RepositoryEntry(
+        repo_id=repo_id,
+        url=args.url,
+        hosting=_guess_hosting(args.url),
+        storage="managed",
+        local_path=str(clone_dir.relative_to(config.project_root)),
+        default_branch=args.branch,
+    )
+    repos = load_repos(config.repos_path)
+    repos[repo_id] = entry
+    save_repos(config.repos_path, repos)
+
+    # Clone
+    clone_cmd = ["git", "clone"]
+    if args.shallow:
+        clone_cmd += ["--depth", "1"]
+    clone_cmd += ["-b", args.branch, args.url, str(clone_dir)]
+
+    try:
+        subprocess.run(clone_cmd, check=True, capture_output=True, text=True)
+    except subprocess.CalledProcessError as exc:
+        print(f"Clone failed: {exc.stderr.strip()}", file=sys.stderr)
+        # Clean up partial clone dir
+        import shutil
+        if clone_dir.exists():
+            shutil.rmtree(clone_dir)
+        raise SystemExit(1)
+
+    if args.as_json:
+        _json_out({"cloned": repo_id, "path": str(clone_dir)})
+    else:
+        print(f"Cloned '{repo_id}' into {clone_dir}")
+
+
+def _cmd_sync(args: argparse.Namespace) -> None:
+    import subprocess
+
+    root = _resolve_root(args)
+    registry = _make_registry(root)
+    repos = registry.list_repos(storage="managed")
+
+    if args.repo_id:
+        repos = [r for r in repos if r.repo_id == args.repo_id]
+        if not repos:
+            print(f"No managed repo '{args.repo_id}' found.", file=sys.stderr)
+            raise SystemExit(1)
+
+    if not repos:
+        print("No managed repositories to sync.")
+        return
+
+    results = []
+    for repo in repos:
+        if not repo.local_path:
+            continue
+        repo_path = registry._config.project_root / repo.local_path
+        if not repo_path.exists():
+            results.append({"repo_id": repo.repo_id, "status": "missing"})
+            continue
+        try:
+            subprocess.run(
+                ["git", "-C", str(repo_path), "pull", "--ff-only"],
+                check=True, capture_output=True, text=True,
+            )
+            results.append({"repo_id": repo.repo_id, "status": "synced"})
+        except subprocess.CalledProcessError as exc:
+            results.append({"repo_id": repo.repo_id, "status": "failed", "error": exc.stderr.strip()})
+
+    if args.as_json:
+        _json_out(results)
+    else:
+        for r in results:
+            status = r["status"]
+            if status == "synced":
+                print(f"  {r['repo_id']}: synced")
+            elif status == "missing":
+                print(f"  {r['repo_id']}: local path missing")
+            else:
+                print(f"  {r['repo_id']}: failed — {r.get('error', '')}")
+
+
+def _cmd_repos(args: argparse.Namespace) -> None:
+    root = _resolve_root(args)
+    registry = _make_registry(root)
+    repos = registry.list_repos(storage=args.storage)
+
+    if args.as_json:
+        _json_out([r.model_dump() for r in repos])
+        return
+    if not repos:
+        print("No repositories tracked.")
+        return
+    for r in repos:
+        line = f"  {r.repo_id:<30s} storage={r.storage:<10s} path={r.local_path}"
+        print(line)
+
+
+def _guess_hosting(url: str) -> str:
+    if "github.com" in url:
+        return "github"
+    if "gitlab" in url:
+        return "gitlab"
+    return "other"
+
+
+def _today() -> str:
+    from datetime import date
+    return date.today().isoformat()
+
+
+# ---------------------------------------------------------------------------
 # Dispatch
 # ---------------------------------------------------------------------------
 
 def _cmd_rag(args: argparse.Namespace) -> None:
     from codio.rag import sync_codio_rag_sources
     root = _resolve_root(args)
+    registry = _make_registry(root)
     try:
         result = sync_codio_rag_sources(
             root, config_path=args.config, force_init=args.force_init,
+            catalog=registry._catalog,
         )
     except ImportError as exc:
         print(str(exc), file=sys.stderr)
@@ -281,6 +697,12 @@ _COMMANDS = {
     "discover": _cmd_discover,
     "study": _cmd_study,
     "compare": _cmd_compare,
+    "add": _cmd_add,
+    "add-urls": _cmd_add_urls,
+    "attach": _cmd_attach,
+    "clone": _cmd_clone,
+    "sync": _cmd_sync,
+    "repos": _cmd_repos,
     "rag": _cmd_rag,
 }
 

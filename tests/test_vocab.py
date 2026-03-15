@@ -29,7 +29,10 @@ def test_enum_descriptions():
 
 def test_get_vocab_structure():
     vocab = get_vocab()
-    assert set(vocab.keys()) == {"kind", "runtime_import", "decision_default", "priority", "status"}
+    assert set(vocab.keys()) == {
+        "kind", "runtime_import", "decision_default", "priority", "status",
+        "storage", "hosting", "source_type", "added_by",
+    }
     for field_name, field_data in vocab.items():
         assert "values" in field_data
         assert "description" in field_data

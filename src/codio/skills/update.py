@@ -56,7 +56,7 @@ def _write_catalog(path: Path, catalog: dict[str, LibraryCatalogEntry]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     data = {"libraries": {}}
     for name, entry in catalog.items():
-        d = entry.model_dump(exclude={"name"}, exclude_defaults=False)
+        d = entry.model_dump(mode="json", exclude={"name"}, exclude_defaults=False)
         data["libraries"][name] = {k: v for k, v in d.items() if v != "" and v != []}
     with open(path, "w") as fh:
         yaml.dump(data, fh, default_flow_style=False, sort_keys=False)
@@ -67,7 +67,7 @@ def _write_profiles(path: Path, profiles: dict[str, ProjectProfileEntry]) -> Non
     path.parent.mkdir(parents=True, exist_ok=True)
     data = {"profiles": {}}
     for name, entry in profiles.items():
-        d = entry.model_dump(exclude={"name"}, exclude_defaults=False)
+        d = entry.model_dump(mode="json", exclude={"name"}, exclude_defaults=False)
         data["profiles"][name] = {k: v for k, v in d.items() if v != "" and v != []}
     with open(path, "w") as fh:
         yaml.dump(data, fh, default_flow_style=False, sort_keys=False)

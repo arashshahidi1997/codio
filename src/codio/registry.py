@@ -12,6 +12,7 @@ from codio.models import (
     LibraryRecord,
     ProjectProfileEntry,
     RegistrySnapshot,
+    RepositoryEntry,
     ValidationResult,
 )
 from codio.vocab import (
@@ -73,6 +74,40 @@ def load_profiles(path: Path) -> dict[str, ProjectProfileEntry]:
     return entries
 
 
+def load_repos(path: Path) -> dict[str, RepositoryEntry]:
+    """Read a YAML repos file and return entries keyed by repo_id.
+
+    Returns an empty dict when *path* does not exist.
+    """
+    if not path.exists():
+        return {}
+
+    with open(path) as fh:
+        raw = yaml.safe_load(fh)
+
+    if not isinstance(raw, dict) or "repositories" not in raw:
+        return {}
+
+    entries: dict[str, RepositoryEntry] = {}
+    for repo_id, fields in raw["repositories"].items():
+        if not isinstance(fields, dict):
+            continue
+        entries[repo_id] = RepositoryEntry(repo_id=repo_id, **fields)
+    return entries
+
+
+def save_repos(path: Path, repos: dict[str, RepositoryEntry]) -> None:
+    """Write repository entries to a YAML file."""
+    data: dict[str, dict] = {}
+    for repo_id, entry in repos.items():
+        d = entry.model_dump(mode="json", exclude={"repo_id"})
+        # Drop empty defaults to keep file clean
+        data[repo_id] = {k: v for k, v in d.items() if v}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w") as fh:
+        yaml.dump({"repositories": data}, fh, default_flow_style=False, sort_keys=False)
+
+
 # ---------------------------------------------------------------------------
 # Registry
 # ---------------------------------------------------------------------------
@@ -95,6 +130,7 @@ class Registry:
         self._config = config
         self._catalog = load_catalog(config.catalog_path)
         self._profiles = load_profiles(config.profiles_path)
+        self._repos = load_repos(config.repos_path)
 
     @classmethod
     def from_paths(
@@ -150,7 +186,21 @@ class Registry:
         return RegistrySnapshot(
             libraries=dict(self._catalog),
             profiles=dict(self._profiles),
+            repositories=dict(self._repos),
         )
+
+    # -- repo queries --------------------------------------------------------
+
+    def list_repos(self, *, storage: str | None = None) -> list[RepositoryEntry]:
+        """Return repository entries, optionally filtered by storage mode."""
+        repos = list(self._repos.values())
+        if storage is not None:
+            repos = [r for r in repos if r.storage == storage]
+        return repos
+
+    def get_repo(self, repo_id: str) -> RepositoryEntry | None:
+        """Return a single repository entry or ``None``."""
+        return self._repos.get(repo_id)
 
     # -- validation ----------------------------------------------------------
 
@@ -210,6 +260,31 @@ class Registry:
                 warnings.append(
                     f"Catalog entry '{name}' has no corresponding profile."
                 )
+
+        # 5. Catalog repo_id references non-existent repo
+        for name, entry in self._catalog.items():
+            if entry.repo_id and entry.repo_id not in self._repos:
+                warnings.append(
+                    f"Catalog '{name}': repo_id '{entry.repo_id}' "
+                    f"not found in repos.yml."
+                )
+
+        # 6. Managed repos with missing local_path on disk
+        for repo_id, repo in self._repos.items():
+            if repo.storage == "managed" and repo.local_path:
+                repo_path = self._config.project_root / repo.local_path
+                if not repo_path.exists():
+                    warnings.append(
+                        f"Repository '{repo_id}': managed local_path "
+                        f"'{repo.local_path}' does not exist."
+                    )
+            if repo.storage == "attached" and repo.local_path:
+                repo_path = self._config.project_root / repo.local_path
+                if not repo_path.exists():
+                    warnings.append(
+                        f"Repository '{repo_id}': attached local_path "
+                        f"'{repo.local_path}' does not exist."
+                    )
 
         return ValidationResult(
             valid=len(errors) == 0,

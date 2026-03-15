@@ -1,0 +1,31 @@
+repositories:
+  braindynamicsusyd--neuropatttoolbox:
+    url: https://github.com/BrainDynamicsUSYD/NeuroPattToolbox
+    hosting: github
+    storage: external
+    default_branch: main
+  navvab-afrashteh--ofamm:
+    url: https://github.com/navvab-afrashteh/OFAMM
+    hosting: github
+    storage: external
+    default_branch: main
+  mullerlab--generalized-phase:
+    url: https://github.com/mullerlab/generalized-phase
+    hosting: github
+    storage: external
+    default_branch: main
+  preraulab--multitaper_toolbox:
+    url: https://github.com/preraulab/multitaper_toolbox
+    hosting: github
+    storage: external
+    default_branch: main
+  sayak66--wm_travelingwaves_code:
+    url: https://github.com/sayak66/wM_travelingwaves_code
+    hosting: github
+    storage: external
+    default_branch: main
+  evolutionaryneuralcodinglab--travelling-waves-or-sequentially-activated-discrete-modules:
+    url: https://github.com/EvolutionaryNeuralCodingLab/Travelling-waves-or-sequentially-activated-discrete-modules
+    hosting: github
+    storage: external
+    default_branch: main

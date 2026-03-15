@@ -5,11 +5,15 @@ from __future__ import annotations
 from pydantic import BaseModel, ConfigDict, Field
 
 from codio.vocab import (
+    AddedBy,
     DecisionDefault,
+    Hosting,
     Kind,
     Priority,
     RuntimeImport,
+    SourceType,
     Status,
+    Storage,
 )
 
 
@@ -31,6 +35,13 @@ class LibraryCatalogEntry(BaseModel):
     license: str = Field(default="", description="Software license")
     path: str = Field(default="", description="Local path for internal code or mirrors")
     summary: str = Field(default="", description="Short description")
+
+    # optional FK to Repository
+    repo_id: str = Field(default="", description="FK to Repository entry in repos.yml")
+
+    # provenance (optional, recorded at ingestion time)
+    added_by: str = Field(default="", description="How the entry was added: manual, discovery, import")
+    added_date: str = Field(default="", description="ISO date when entry was added")
 
 
 # ---------------------------------------------------------------------------
@@ -80,6 +91,9 @@ class LibraryRecord(BaseModel):
     license: str = Field(default="", description="Software license")
     path: str = Field(default="", description="Local path for internal code or mirrors")
     summary: str = Field(default="", description="Short description")
+    repo_id: str = Field(default="", description="FK to Repository entry in repos.yml")
+    added_by: str = Field(default="", description="How the entry was added")
+    added_date: str = Field(default="", description="ISO date when entry was added")
 
     # profile fields
     priority: Priority = Field(default=Priority.tier2, description="Priority tier")
@@ -132,6 +146,41 @@ class ValidationResult(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Repository entity — first-class repo identity
+# ---------------------------------------------------------------------------
+
+
+class RepositoryEntry(BaseModel):
+    """A version-controlled repository tracked by codio."""
+
+    model_config = ConfigDict(use_enum_values=True)
+
+    repo_id: str = Field(..., description="Canonical slug (e.g. scipy--scipy)")
+    url: str = Field(default="", description="Clone URL")
+    hosting: Hosting = Field(default=Hosting.other, description="Hosting provider")
+    storage: Storage = Field(default=Storage.external, description="Storage mode")
+    local_path: str = Field(default="", description="Filesystem path when cloned locally")
+    default_branch: str = Field(default="main", description="Default branch name")
+
+
+# ---------------------------------------------------------------------------
+# Code source — indexable unit within a repository
+# ---------------------------------------------------------------------------
+
+
+class CodeSourceEntry(BaseModel):
+    """A unit of code within a repository that codio tracks."""
+
+    model_config = ConfigDict(use_enum_values=True)
+
+    source_id: str = Field(..., description="Unique slug within the registry")
+    repo_id: str = Field(default="", description="FK to RepositoryEntry")
+    subpath: str = Field(default="", description="Path within the repository")
+    source_type: SourceType = Field(default=SourceType.tree, description="Source unit type")
+    indexable: bool = Field(default=True, description="Whether to register in indexio")
+
+
+# ---------------------------------------------------------------------------
 # Registry snapshot
 # ---------------------------------------------------------------------------
 
@@ -145,4 +194,7 @@ class RegistrySnapshot(BaseModel):
     profiles: dict[str, ProjectProfileEntry] = Field(
         ..., description="Profile entries keyed by library name"
     )
-    version: str = Field(default="0.1.0", description="Registry schema version")
+    repositories: dict[str, RepositoryEntry] = Field(
+        default_factory=dict, description="Repository entries keyed by repo_id"
+    )
+    version: str = Field(default="0.2.0", description="Registry schema version")

@@ -88,4 +88,4 @@ def test_registry_snapshot():
     prof = ProjectProfileEntry(name="a")
     snap = RegistrySnapshot(libraries={"a": cat}, profiles={"a": prof})
     assert "a" in snap.libraries
-    assert snap.version == "0.1.0"
+    assert snap.version == "0.2.0"
