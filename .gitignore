@@ -1,3 +1,15 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.projio/index/
+*.egg
+.cache/
+
 # >>> projio >>>
 .projio.mkdocs.yml
 .projio/servers.json
