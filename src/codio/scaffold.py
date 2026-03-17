@@ -46,11 +46,10 @@ def init_codio_scaffold(
 ) -> ScaffoldResult:
     """Scaffold codio registry files with starter YAML templates.
 
-    *target_dir* overrides the default ``.codio/`` location.  When called
-    from ``projio add codio``, this is typically ``.projio/codio/``.
+    *target_dir* overrides the default ``.projio/codio/`` location.
     """
     project_root = Path(project_root).expanduser().resolve()
-    codio_dir = Path(target_dir) if target_dir is not None else project_root / ".codio"
+    codio_dir = Path(target_dir) if target_dir is not None else project_root / ".projio" / "codio"
     if not codio_dir.is_absolute():
         codio_dir = project_root / codio_dir
 

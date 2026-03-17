@@ -3,11 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
-DEFAULT_CATALOG_PATH = ".codio/catalog.yml"
-DEFAULT_PROFILES_PATH = ".codio/profiles.yml"
-DEFAULT_REPOS_PATH = ".codio/repos.yml"
+DEFAULT_CATALOG_PATH = ".projio/codio/catalog.yml"
+DEFAULT_PROFILES_PATH = ".projio/codio/profiles.yml"
+DEFAULT_REPOS_PATH = ".projio/codio/repos.yml"
 DEFAULT_NOTES_DIR = "docs/reference/codelib/libraries/"
-DEFAULT_MIRRORS_DIR = ".codio/mirrors/"
+DEFAULT_MIRRORS_DIR = ".projio/codio/mirrors/"
 
 
 def _default_path(value: str) -> Path:

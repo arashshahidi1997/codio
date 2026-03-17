@@ -7,7 +7,7 @@ def find_project_root(start: Path | None = None) -> Path:
     """Walk up from *start* looking for a codio or projio project root.
 
     Detection order:
-    1. ``.codio/catalog.yml`` — strongest signal
+    1. ``.projio/codio/catalog.yml`` — strongest signal
     2. ``.projio/config.yml`` — projio-managed project
     3. ``.git`` or ``pyproject.toml`` — generic project root
     4. Fallback to the resolved *start* directory
@@ -18,7 +18,7 @@ def find_project_root(start: Path | None = None) -> Path:
 
     current = start if start.is_dir() else start.parent
     while True:
-        if (current / ".codio" / "catalog.yml").exists():
+        if (current / ".projio" / "codio" / "catalog.yml").exists():
             return current
         if (current / ".projio" / "config.yml").exists():
             return current

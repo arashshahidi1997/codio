@@ -8,8 +8,8 @@ import yaml
 @pytest.fixture
 def tmp_project(tmp_path):
     """Create a temporary project directory with sample registry files."""
-    codio_dir = tmp_path / ".codio"
-    codio_dir.mkdir()
+    codio_dir = tmp_path / ".projio" / "codio"
+    codio_dir.mkdir(parents=True)
 
     catalog_data = {
         "libraries": {
@@ -70,8 +70,8 @@ def registry(tmp_project):
     from codio.registry import Registry
 
     config = CodioConfig(
-        catalog_path=tmp_project / ".codio" / "catalog.yml",
-        profiles_path=tmp_project / ".codio" / "profiles.yml",
+        catalog_path=tmp_project / ".projio" / "codio" / "catalog.yml",
+        profiles_path=tmp_project / ".projio" / "codio" / "profiles.yml",
         project_root=tmp_project,
     )
     return Registry(config=config)

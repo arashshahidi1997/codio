@@ -11,8 +11,8 @@ from codio.rag import CODIO_CATALOG_SOURCE_ID, CODIO_NOTES_SOURCE_ID, owned_codi
 
 def _make_config(tmp_path: Path) -> CodioConfig:
     return CodioConfig(
-        catalog_path=tmp_path / ".codio" / "catalog.yml",
-        profiles_path=tmp_path / ".codio" / "profiles.yml",
+        catalog_path=tmp_path / ".projio" / "codio" / "catalog.yml",
+        profiles_path=tmp_path / ".projio" / "codio" / "profiles.yml",
         notes_dir=tmp_path / "docs" / "reference" / "codelib" / "libraries",
         project_root=tmp_path,
     )

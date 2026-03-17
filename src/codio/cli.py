@@ -14,7 +14,7 @@ def _build_parser() -> argparse.ArgumentParser:
     sub = p.add_subparsers(dest="command")
 
     # --- init ---------------------------------------------------------------
-    p_init = sub.add_parser("init", help="Scaffold .codio/ in a project")
+    p_init = sub.add_parser("init", help="Scaffold .projio/codio/ in a project")
     p_init.add_argument("--root", type=Path, default=None, help="Project root")
     p_init.add_argument("--force", action="store_true", help="Overwrite existing files")
 
@@ -166,8 +166,8 @@ def _cmd_init(args: argparse.Namespace) -> None:
         for f in result.files_written:
             print(f"  created {f.relative_to(result.root)}")
     else:
-        print("  .codio/ already exists (use --force to overwrite)")
-    print(f"Codio scaffold ready at {result.root / '.codio'}")
+        print("  .projio/codio/ already exists (use --force to overwrite)")
+    print(f"Codio scaffold ready at {result.root / '.projio' / 'codio'}")
 
 
 def _cmd_list(args: argparse.Namespace) -> None:

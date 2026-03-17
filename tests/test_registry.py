@@ -6,7 +6,7 @@ from codio.config import CodioConfig
 
 
 def test_load_catalog(tmp_project):
-    entries = load_catalog(tmp_project / ".codio" / "catalog.yml")
+    entries = load_catalog(tmp_project / ".projio" / "codio" / "catalog.yml")
     assert "internal-utils" in entries
     assert "numpy-mirror" in entries
     assert entries["internal-utils"].kind == "internal"
@@ -18,7 +18,7 @@ def test_load_catalog_missing_file(tmp_path):
 
 
 def test_load_profiles(tmp_project):
-    entries = load_profiles(tmp_project / ".codio" / "profiles.yml")
+    entries = load_profiles(tmp_project / ".projio" / "codio" / "profiles.yml")
     assert "internal-utils" in entries
     assert entries["internal-utils"].priority == "tier1"
 
@@ -88,8 +88,8 @@ def test_registry_validate(registry):
 
 def test_registry_validate_orphan_profile(tmp_path):
     """Profile referencing non-existent catalog entry should be an error."""
-    codio_dir = tmp_path / ".codio"
-    codio_dir.mkdir()
+    codio_dir = tmp_path / ".projio" / "codio"
+    codio_dir.mkdir(parents=True)
     with open(codio_dir / "catalog.yml", "w") as f:
         yaml.dump({"libraries": {"real": {"kind": "internal"}}}, f)
     with open(codio_dir / "profiles.yml", "w") as f:

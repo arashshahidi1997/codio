@@ -66,7 +66,7 @@ def test_repository_entry():
         url="https://github.com/scipy/scipy.git",
         hosting="github",
         storage="managed",
-        local_path=".codio/mirrors/scipy--scipy",
+        local_path=".projio/codio/mirrors/scipy--scipy",
         default_branch="main",
     )
     assert repo.repo_id == "scipy--scipy"
@@ -141,8 +141,8 @@ def test_snapshot_includes_repos():
 
 def test_config_has_repos_path():
     cfg = CodioConfig()
-    assert cfg.repos_path == Path(".codio/repos.yml")
-    assert cfg.mirrors_dir == Path(".codio/mirrors/")
+    assert cfg.repos_path == Path(".projio/codio/repos.yml")
+    assert cfg.mirrors_dir == Path(".projio/codio/mirrors/")
 
 
 def test_load_config_repos_overrides(tmp_path):
@@ -174,7 +174,7 @@ def test_load_and_save_repos(tmp_path):
             url="https://github.com/scipy/scipy.git",
             hosting="github",
             storage="managed",
-            local_path=".codio/mirrors/scipy--scipy",
+            local_path=".projio/codio/mirrors/scipy--scipy",
         ),
         "local--utils": RepositoryEntry(
             repo_id="local--utils",
@@ -200,8 +200,8 @@ def test_load_and_save_repos(tmp_path):
 @pytest.fixture
 def project_with_repos(tmp_path):
     """Project with catalog, profiles, AND repos."""
-    codio_dir = tmp_path / ".codio"
-    codio_dir.mkdir()
+    codio_dir = tmp_path / ".projio" / "codio"
+    codio_dir.mkdir(parents=True)
 
     catalog = {"libraries": {
         "scipy-linalg": {
@@ -222,7 +222,7 @@ def project_with_repos(tmp_path):
             "url": "https://github.com/scipy/scipy.git",
             "hosting": "github",
             "storage": "managed",
-            "local_path": ".codio/mirrors/scipy--scipy",
+            "local_path": ".projio/codio/mirrors/scipy--scipy",
         },
     }}
 
@@ -235,9 +235,9 @@ def project_with_repos(tmp_path):
 
 def _make_registry_from(project_root):
     cfg = CodioConfig(
-        catalog_path=project_root / ".codio" / "catalog.yml",
-        profiles_path=project_root / ".codio" / "profiles.yml",
-        repos_path=project_root / ".codio" / "repos.yml",
+        catalog_path=project_root / ".projio" / "codio" / "catalog.yml",
+        profiles_path=project_root / ".projio" / "codio" / "profiles.yml",
+        repos_path=project_root / ".projio" / "codio" / "repos.yml",
         project_root=project_root,
     )
     return Registry(config=cfg)
@@ -299,8 +299,8 @@ def test_owned_sources_with_catalog(tmp_path):
     lib_dir.mkdir(parents=True)
 
     cfg = CodioConfig(
-        catalog_path=tmp_path / ".codio" / "catalog.yml",
-        profiles_path=tmp_path / ".codio" / "profiles.yml",
+        catalog_path=tmp_path / ".projio" / "codio" / "catalog.yml",
+        profiles_path=tmp_path / ".projio" / "codio" / "profiles.yml",
         notes_dir=tmp_path / "docs" / "notes",
         project_root=tmp_path,
     )
@@ -347,13 +347,13 @@ def test_cli_add(tmp_project):
     ])
 
     # Verify it's in the catalog
-    with open(tmp_project / ".codio" / "catalog.yml") as f:
+    with open(tmp_project / ".projio" / "codio" / "catalog.yml") as f:
         cat = yaml.safe_load(f)
     assert "pandas" in cat["libraries"]
     assert cat["libraries"]["pandas"]["kind"] == "external_mirror"
 
     # Verify profile was created
-    with open(tmp_project / ".codio" / "profiles.yml") as f:
+    with open(tmp_project / ".projio" / "codio" / "profiles.yml") as f:
         prof = yaml.safe_load(f)
     assert "pandas" in prof["profiles"]
     assert prof["profiles"]["pandas"]["priority"] == "tier1"
@@ -392,7 +392,7 @@ def test_cli_attach(tmp_project):
         "--root", str(tmp_project),
     ])
 
-    repos = load_repos(tmp_project / ".codio" / "repos.yml")
+    repos = load_repos(tmp_project / ".projio" / "codio" / "repos.yml")
     assert "my--repo" in repos
     assert repos["my--repo"].storage == "attached"
     assert repos["my--repo"].url == "https://github.com/me/myrepo"
@@ -431,7 +431,7 @@ def test_scaffold_creates_repos_yml(tmp_path):
     from codio.scaffold import init_codio_scaffold
 
     init_codio_scaffold(tmp_path)
-    repos_yml = tmp_path / ".codio" / "repos.yml"
+    repos_yml = tmp_path / ".projio" / "codio" / "repos.yml"
     assert repos_yml.exists()
     with open(repos_yml) as f:
         data = yaml.safe_load(f)

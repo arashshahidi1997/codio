@@ -17,9 +17,9 @@ from codio.scaffold import init_codio_scaffold
 
 def test_init_creates_scaffold(tmp_path):
     result = init_codio_scaffold(tmp_path)
-    assert (tmp_path / ".codio" / "catalog.yml").exists()
-    assert (tmp_path / ".codio" / "profiles.yml").exists()
-    assert (tmp_path / ".codio" / "repos.yml").exists()
+    assert (tmp_path / ".projio" / "codio" / "catalog.yml").exists()
+    assert (tmp_path / ".projio" / "codio" / "profiles.yml").exists()
+    assert (tmp_path / ".projio" / "codio" / "repos.yml").exists()
     assert (tmp_path / "docs" / "reference" / "codelib" / "libraries").is_dir()
     assert len(result.files_written) == 3
 
@@ -33,7 +33,7 @@ def test_init_skips_existing(tmp_path):
 def test_init_force_overwrites(tmp_path):
     init_codio_scaffold(tmp_path)
     # Modify a file
-    cat = tmp_path / ".codio" / "catalog.yml"
+    cat = tmp_path / ".projio" / "codio" / "catalog.yml"
     cat.write_text("modified")
     result = init_codio_scaffold(tmp_path, force=True)
     assert len(result.files_written) == 3
@@ -47,9 +47,9 @@ def test_init_force_overwrites(tmp_path):
 
 def test_cli_init(tmp_path, capsys):
     main(["init", "--root", str(tmp_path)])
-    assert (tmp_path / ".codio" / "catalog.yml").exists()
+    assert (tmp_path / ".projio" / "codio" / "catalog.yml").exists()
     out = capsys.readouterr().out
-    assert ".codio" in out
+    assert ".projio/codio" in out
 
 
 def test_cli_init_force(tmp_path, capsys):
@@ -340,7 +340,7 @@ def test_add_urls_repos_yml(tmp_project, capsys, monkeypatch):
     capsys.readouterr()
 
     import yaml
-    repos_path = tmp_project / ".codio" / "repos.yml"
+    repos_path = tmp_project / ".projio" / "codio" / "repos.yml"
     assert repos_path.exists()
     with open(repos_path) as f:
         data = yaml.safe_load(f)
