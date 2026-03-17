@@ -56,3 +56,13 @@ libraries:
     repo_id: evolutionaryneuralcodinglab--travelling-waves-or-sequentially-activated-discrete-modules
     added_by: import
     added_date: '2026-03-15'
+  biblio:
+    kind: external_mirror
+    language: python
+    repo_url: https://github.com/arashshahidi1997/biblio
+    pip_name: biblio
+    license: MIT
+    summary: bibliography digester
+    repo_id: arashshahidi1997--biblio
+    added_by: import
+    added_date: '2026-03-15'

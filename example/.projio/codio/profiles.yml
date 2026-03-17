@@ -39,3 +39,8 @@ profiles:
     runtime_import: reference_only
     decision_default: new
     status: candidate
+  biblio:
+    priority: tier2
+    runtime_import: pip_only
+    decision_default: wrap
+    status: candidate

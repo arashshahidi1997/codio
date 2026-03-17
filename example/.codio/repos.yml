@@ -29,3 +29,8 @@ repositories:
     hosting: github
     storage: external
     default_branch: main
+  arashshahidi1997--biblio:
+    url: https://github.com/arashshahidi1997/biblio
+    hosting: github
+    storage: external
+    default_branch: main
