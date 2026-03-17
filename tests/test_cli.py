@@ -248,7 +248,7 @@ def test_cli_json_compare(tmp_project, capsys):
 def test_add_urls_single(tmp_project, capsys, monkeypatch):
     """add-urls registers a library from a GitHub URL."""
     monkeypatch.setattr(
-        "codio.cli._fetch_github_meta",
+        "codio.skills.update.fetch_github_meta",
         lambda url: {
             "description": "A wave analysis toolbox",
             "language": "Python",
@@ -275,7 +275,7 @@ def test_add_urls_single(tmp_project, capsys, monkeypatch):
 
 def test_add_urls_multiple(tmp_project, capsys, monkeypatch):
     """add-urls handles multiple URLs in one call."""
-    monkeypatch.setattr("codio.cli._fetch_github_meta", lambda url: {})
+    monkeypatch.setattr("codio.skills.update.fetch_github_meta", lambda url: {})
     main([
         "add-urls",
         "https://github.com/mullerlab/generalized-phase",
@@ -290,7 +290,7 @@ def test_add_urls_multiple(tmp_project, capsys, monkeypatch):
 
 def test_add_urls_skip_existing(tmp_project, capsys, monkeypatch):
     """add-urls skips URLs whose library name already exists."""
-    monkeypatch.setattr("codio.cli._fetch_github_meta", lambda url: {"language": "Python"})
+    monkeypatch.setattr("codio.skills.update.fetch_github_meta", lambda url: {"language": "Python"})
     # Add first
     main(["add-urls", "https://github.com/owner/some-lib", "--root", str(tmp_project)])
     capsys.readouterr()
@@ -303,7 +303,7 @@ def test_add_urls_skip_existing(tmp_project, capsys, monkeypatch):
 
 def test_add_urls_json(tmp_project, capsys, monkeypatch):
     """add-urls --json returns structured output."""
-    monkeypatch.setattr("codio.cli._fetch_github_meta", lambda url: {"language": "MATLAB"})
+    monkeypatch.setattr("codio.skills.update.fetch_github_meta", lambda url: {"language": "MATLAB"})
     main([
         "add-urls",
         "https://github.com/navvab-afrashteh/OFAMM",
@@ -326,7 +326,7 @@ def test_add_urls_json(tmp_project, capsys, monkeypatch):
 
 def test_add_urls_bad_url(tmp_project, capsys, monkeypatch):
     """add-urls handles unparseable URLs gracefully."""
-    monkeypatch.setattr("codio.cli._fetch_github_meta", lambda url: {})
+    monkeypatch.setattr("codio.skills.update.fetch_github_meta", lambda url: {})
     main(["add-urls", "not-a-url", "--root", str(tmp_project)])
     out = capsys.readouterr().out
     assert "cannot parse" in out
@@ -335,7 +335,7 @@ def test_add_urls_bad_url(tmp_project, capsys, monkeypatch):
 
 def test_add_urls_repos_yml(tmp_project, capsys, monkeypatch):
     """add-urls creates repo entries in repos.yml."""
-    monkeypatch.setattr("codio.cli._fetch_github_meta", lambda url: {})
+    monkeypatch.setattr("codio.skills.update.fetch_github_meta", lambda url: {})
     main(["add-urls", "https://github.com/scipy/scipy", "--root", str(tmp_project)])
     capsys.readouterr()
 
