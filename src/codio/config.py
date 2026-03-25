@@ -49,11 +49,15 @@ def load_config(project_root: Path | None = None) -> CodioConfig:
             if isinstance(section, dict):
                 overrides = section
 
-    catalog_path = project_root / overrides.get("catalog_path", DEFAULT_CATALOG_PATH)
-    profiles_path = project_root / overrides.get("profiles_path", DEFAULT_PROFILES_PATH)
-    repos_path = project_root / overrides.get("repos_path", DEFAULT_REPOS_PATH)
-    notes_dir = project_root / overrides.get("notes_dir", DEFAULT_NOTES_DIR)
-    mirrors_dir = project_root / overrides.get("mirrors_dir", DEFAULT_MIRRORS_DIR)
+    def _resolve(key: str, default: str) -> Path:
+        raw = Path(overrides.get(key, default))
+        return raw if raw.is_absolute() else project_root / raw
+
+    catalog_path = _resolve("catalog_path", DEFAULT_CATALOG_PATH)
+    profiles_path = _resolve("profiles_path", DEFAULT_PROFILES_PATH)
+    repos_path = _resolve("repos_path", DEFAULT_REPOS_PATH)
+    notes_dir = _resolve("notes_dir", DEFAULT_NOTES_DIR)
+    mirrors_dir = _resolve("mirrors_dir", DEFAULT_MIRRORS_DIR)
 
     return CodioConfig(
         catalog_path=catalog_path,

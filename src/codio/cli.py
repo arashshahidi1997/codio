@@ -433,7 +433,7 @@ def _cmd_clone(args: argparse.Namespace) -> None:
         url=args.url,
         hosting=_guess_hosting(args.url),
         storage="managed",
-        local_path=str(clone_dir.relative_to(config.project_root)),
+        local_path=str(clone_dir.relative_to(config.project_root) if clone_dir.is_relative_to(config.project_root) else clone_dir),
         default_branch=args.branch,
     )
     repos = load_repos(config.repos_path)

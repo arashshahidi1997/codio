@@ -109,6 +109,68 @@ def fetch_github_meta(url: str) -> dict[str, Any]:
         return {}
 
 
+def _detect_branch(clone_dir: Path) -> str:
+    """Read the default branch from a cloned repo's HEAD."""
+    import subprocess
+
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(clone_dir), "symbolic-ref", "--short", "HEAD"],
+            capture_output=True, text=True, check=True,
+        )
+        return out.stdout.strip()
+    except subprocess.CalledProcessError:
+        return "main"
+
+
+def _ensure_clone(
+    registry: Registry,
+    repos: dict[str, RepositoryEntry],
+    url: str,
+    repo_id: str,
+    *,
+    shallow: bool = False,
+) -> tuple[bool, str]:
+    """Clone a repo if not already present on disk. Updates repos dict in place.
+
+    Clones with the remote's default branch (no ``-b`` flag) so repos using
+    ``master`` or any other default work without manual overrides.
+
+    Returns ``(success, error_message)``.
+    """
+    import subprocess
+
+    clone_dir = registry._config.mirrors_dir / repo_id
+    if not clone_dir.exists():
+        clone_cmd = ["git", "clone"]
+        if shallow:
+            clone_cmd += ["--depth", "1"]
+        clone_cmd += [url, str(clone_dir)]
+        try:
+            subprocess.run(clone_cmd, check=True, capture_output=True, text=True)
+        except subprocess.CalledProcessError as exc:
+            return False, f"git clone failed: {exc.stderr.strip()}"
+        except Exception as exc:
+            return False, f"clone error: {exc}"
+
+    branch = _detect_branch(clone_dir)
+    local_path = str(clone_dir.relative_to(registry._config.project_root) if clone_dir.is_relative_to(registry._config.project_root) else clone_dir)
+    if repo_id in repos:
+        repos[repo_id].storage = "managed"
+        repos[repo_id].local_path = local_path
+        repos[repo_id].default_branch = branch
+    else:
+        repos[repo_id] = RepositoryEntry(
+            repo_id=repo_id,
+            url=url,
+            hosting=guess_hosting(url),
+            storage="managed",
+            local_path=local_path,
+            default_branch=branch,
+        )
+    return True, ""
+
+
 def add_urls(
     registry: Registry,
     urls: list[str],
@@ -125,8 +187,6 @@ def add_urls(
     Returns a list of result dicts per URL with keys:
         url, name, status ("added"|"exists"|"error"), repo_id, reason.
     """
-    import subprocess
-
     repos = load_repos(registry._config.repos_path)
     today = datetime.date.today().isoformat()
     results: list[dict[str, str]] = []
@@ -145,7 +205,19 @@ def add_urls(
         lib_name = m.group(2).lower().replace("-", "_")
 
         if lib_name in registry._catalog:
-            results.append({"url": url, "name": lib_name, "status": "exists"})
+            if clone:
+                # Still attempt clone for already-cataloged entries
+                ok, err = _ensure_clone(
+                    registry, repos, url, repo_id, shallow=shallow,
+                )
+                if ok:
+                    save_repos(registry._config.repos_path, repos)
+                result = {"url": url, "name": lib_name, "status": "cloned" if ok else "clone_failed"}
+                if err:
+                    result["reason"] = err
+                results.append(result)
+            else:
+                results.append({"url": url, "name": lib_name, "status": "exists"})
             continue
 
         hosting = guess_hosting(url)
@@ -187,37 +259,26 @@ def add_urls(
 
         add_library(registry, catalog_entry, profile_entry)
 
-        # Register repo entry
-        storage = "external"
-        local_path = ""
-
+        # Register repo entry and optionally clone
+        clone_err = ""
         if clone:
-            clone_dir = registry._config.mirrors_dir / repo_id
-            if not clone_dir.exists():
-                clone_cmd = ["git", "clone"]
-                if shallow:
-                    clone_cmd += ["--depth", "1"]
-                clone_cmd += ["-b", branch, url, str(clone_dir)]
-                try:
-                    subprocess.run(clone_cmd, check=True, capture_output=True, text=True)
-                    storage = "managed"
-                    local_path = str(clone_dir.relative_to(registry._config.project_root))
-                except subprocess.CalledProcessError:
-                    pass
-            else:
-                storage = "managed"
-                local_path = str(clone_dir.relative_to(registry._config.project_root))
+            ok, clone_err = _ensure_clone(registry, repos, url, repo_id, shallow=shallow)
 
-        repo_entry = RepositoryEntry(
-            repo_id=repo_id,
-            url=url,
-            hosting=hosting,
-            storage=storage,
-            local_path=local_path,
-            default_branch=branch,
-        )
-        repos[repo_id] = repo_entry
-        results.append({"url": url, "name": lib_name, "status": "added", "repo_id": repo_id})
+        repo = repos.get(repo_id)
+        if repo is None:
+            repo_entry = RepositoryEntry(
+                repo_id=repo_id,
+                url=url,
+                hosting=hosting,
+                storage="external",
+                local_path="",
+                default_branch=branch,
+            )
+            repos[repo_id] = repo_entry
+        result = {"url": url, "name": lib_name, "status": "added", "repo_id": repo_id}
+        if clone_err:
+            result["clone_error"] = clone_err
+        results.append(result)
 
     save_repos(registry._config.repos_path, repos)
     return results
