@@ -342,123 +342,16 @@ def _cmd_add(args: argparse.Namespace) -> None:
 
 
 def _cmd_add_urls(args: argparse.Namespace) -> None:
-    import re
-    import subprocess
+    from codio.skills.update import add_urls
 
-    from codio.config import load_config
-    from codio.models import LibraryCatalogEntry, ProjectProfileEntry, RepositoryEntry
-    from codio.registry import load_repos, save_repos
-    from codio.skills.update import add_library
-
-    root = _resolve_root(args)
-    config = load_config(root)
-    registry = _make_registry(root)
-    repos = load_repos(config.repos_path)
-
-    results = []
-    for url in args.urls:
-        url = url.strip()
-        if not url:
-            continue
-
-        # Derive repo_id from URL
-        m = re.search(r"[/:]([^/:]+)/([^/.]+?)(?:\.git)?$", url)
-        if not m:
-            results.append({"url": url, "status": "error", "reason": "cannot parse URL"})
-            continue
-        repo_id = f"{m.group(1)}--{m.group(2)}".lower()
-        # Library name: just the repo part, lowercased with underscores
-        lib_name = m.group(2).lower().replace("-", "_")
-
-        # Skip if already in catalog
-        if lib_name in registry._catalog:
-            results.append({"url": url, "name": lib_name, "status": "exists"})
-            continue
-
-        hosting = _guess_hosting(url)
-
-        # Fetch metadata from GitHub API if applicable
-        gh_meta = _fetch_github_meta(url) if hosting == "github" else {}
-
-        language = gh_meta.get("language", "").lower()
-        summary = gh_meta.get("description", "") or ""
-        license_name = ""
-        if gh_meta.get("license") and isinstance(gh_meta["license"], dict):
-            license_name = gh_meta["license"].get("spdx_id", "") or ""
-        pip_name = ""
-        # For Python repos, guess pip name from repo name
-        if language == "python":
-            pip_name = m.group(2).lower()
-
-        # Determine runtime_import from language
-        if language in ("python",):
-            runtime_import = "pip_only"
-        else:
-            runtime_import = "reference_only"
-
-        catalog_entry = LibraryCatalogEntry(
-            name=lib_name,
-            kind="external_mirror",
-            language=language,
-            repo_url=url,
-            pip_name=pip_name,
-            license=license_name,
-            summary=summary[:200] if summary else "",
-            repo_id=repo_id,
-            added_by="import",
-            added_date=_today(),
-        )
-
-        # GitHub topics → capability tags
-        topics = gh_meta.get("topics", []) or []
-        caps = [t for t in topics if t] if topics else []
-
-        profile_entry = ProjectProfileEntry(
-            name=lib_name,
-            priority="tier2",
-            runtime_import=runtime_import,
-            decision_default="wrap" if language in ("python",) else "new",
-            capabilities=caps,
-            status="candidate",
-        )
-
-        add_library(registry, catalog_entry, profile_entry)
-
-        # Register repo entry
-        storage = "external"
-        local_path = ""
-
-        if args.clone:
-            clone_dir = config.mirrors_dir / repo_id
-            if not clone_dir.exists():
-                clone_cmd = ["git", "clone"]
-                if args.shallow:
-                    clone_cmd += ["--depth", "1"]
-                clone_cmd += ["-b", args.branch, url, str(clone_dir)]
-                try:
-                    subprocess.run(clone_cmd, check=True, capture_output=True, text=True)
-                    storage = "managed"
-                    local_path = str(clone_dir.relative_to(config.project_root))
-                except subprocess.CalledProcessError:
-                    # Clone failed — still register as external
-                    pass
-            else:
-                storage = "managed"
-                local_path = str(clone_dir.relative_to(config.project_root))
-
-        repo_entry = RepositoryEntry(
-            repo_id=repo_id,
-            url=url,
-            hosting=hosting,
-            storage=storage,
-            local_path=local_path,
-            default_branch=args.branch,
-        )
-        repos[repo_id] = repo_entry
-
-        results.append({"url": url, "name": lib_name, "status": "added", "repo_id": repo_id})
-
-    save_repos(config.repos_path, repos)
+    registry = _make_registry(_resolve_root(args))
+    results = add_urls(
+        registry,
+        args.urls,
+        clone=args.clone,
+        shallow=args.shallow,
+        branch=args.branch,
+    )
 
     if args.as_json:
         _json_out(results)
@@ -476,22 +369,8 @@ def _cmd_add_urls(args: argparse.Namespace) -> None:
 
 def _fetch_github_meta(url: str) -> dict:
     """Fetch repository metadata from GitHub API. Returns {} on failure."""
-    import re
-    m = re.search(r"github\.com/([^/]+)/([^/.]+?)(?:\.git)?$", url)
-    if not m:
-        return {}
-    owner, repo = m.group(1), m.group(2)
-    try:
-        import urllib.request
-        import json as _json
-        req = urllib.request.Request(
-            f"https://api.github.com/repos/{owner}/{repo}",
-            headers={"Accept": "application/vnd.github.v3+json", "User-Agent": "codio"},
-        )
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            return _json.loads(resp.read())
-    except Exception:
-        return {}
+    from codio.skills.update import fetch_github_meta
+    return fetch_github_meta(url)
 
 
 def _cmd_attach(args: argparse.Namespace) -> None:
@@ -647,11 +526,8 @@ def _cmd_repos(args: argparse.Namespace) -> None:
 
 
 def _guess_hosting(url: str) -> str:
-    if "github.com" in url:
-        return "github"
-    if "gitlab" in url:
-        return "gitlab"
-    return "other"
+    from codio.skills.update import guess_hosting
+    return guess_hosting(url)
 
 
 def _today() -> str:

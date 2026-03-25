@@ -45,3 +45,17 @@ def mcp_vocab() -> dict:
 def mcp_validate(registry: Registry) -> dict:
     """Return registry validation result as a dict."""
     return registry.validate().model_dump()
+
+
+def mcp_add_urls(
+    registry: Registry,
+    urls: list[str],
+    *,
+    clone: bool = False,
+    shallow: bool = False,
+    branch: str = "main",
+) -> list[dict]:
+    """Add libraries from repository URLs. Returns per-URL result dicts."""
+    from .skills.update import add_urls
+
+    return add_urls(registry, urls, clone=clone, shallow=shallow, branch=branch)
