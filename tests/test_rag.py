@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from codio.config import CodioConfig
+from codio.models import LibraryCatalogEntry
 from codio.rag import CODIO_CATALOG_SOURCE_ID, CODIO_NOTES_SOURCE_ID, owned_codio_sources
 
 
@@ -39,6 +40,45 @@ def test_owned_codio_sources_ids_unique(tmp_path):
     sources = owned_codio_sources(config)
     ids = [s["id"] for s in sources]
     assert len(ids) == len(set(ids))
+
+
+def test_owned_codio_sources_python_glob(tmp_path):
+    """Python libraries use **/*.py glob."""
+    config = _make_config(tmp_path)
+    lib_path = tmp_path / "src" / "mylib"
+    lib_path.mkdir(parents=True)
+    catalog = {
+        "mylib": LibraryCatalogEntry(name="mylib", kind="internal", language="python", path="src/mylib"),
+    }
+    sources = owned_codio_sources(config, catalog)
+    src_source = next(s for s in sources if s["id"] == "codio-src-mylib")
+    assert str(src_source["glob"]).endswith("**/*.py")
+
+
+def test_owned_codio_sources_matlab_glob(tmp_path):
+    """MATLAB libraries use **/*.m glob."""
+    config = _make_config(tmp_path)
+    lib_path = tmp_path / "src" / "toolbox"
+    lib_path.mkdir(parents=True)
+    catalog = {
+        "toolbox": LibraryCatalogEntry(name="toolbox", kind="external_mirror", language="matlab", path="src/toolbox"),
+    }
+    sources = owned_codio_sources(config, catalog)
+    src_source = next(s for s in sources if s["id"] == "codio-src-toolbox")
+    assert str(src_source["glob"]).endswith("**/*.m")
+
+
+def test_owned_codio_sources_unknown_language_glob(tmp_path):
+    """Unknown languages fall back to **/* glob."""
+    config = _make_config(tmp_path)
+    lib_path = tmp_path / "src" / "exotic"
+    lib_path.mkdir(parents=True)
+    catalog = {
+        "exotic": LibraryCatalogEntry(name="exotic", kind="utility", language="fortran", path="src/exotic"),
+    }
+    sources = owned_codio_sources(config, catalog)
+    src_source = next(s for s in sources if s["id"] == "codio-src-exotic")
+    assert str(src_source["glob"]).endswith("**/*")
 
 
 def test_sync_requires_indexio(tmp_path):

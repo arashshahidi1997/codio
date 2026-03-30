@@ -147,6 +147,13 @@ class Registry:
         )
         return cls(config=config)
 
+    # -- properties ----------------------------------------------------------
+
+    @property
+    def catalog(self) -> dict:
+        """Public accessor for the raw catalog dict."""
+        return self._catalog
+
     # -- queries -------------------------------------------------------------
 
     def list(

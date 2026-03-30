@@ -86,6 +86,14 @@ def test_registry_validate(registry):
     assert any("curated_note" in w for w in result.warnings)
 
 
+def test_registry_catalog_property(registry):
+    """registry.catalog is a public property, not a private attribute."""
+    cat = registry.catalog
+    assert isinstance(cat, dict)
+    assert "internal-utils" in cat
+    assert "numpy-mirror" in cat
+
+
 def test_registry_validate_orphan_profile(tmp_path):
     """Profile referencing non-existent catalog entry should be an error."""
     codio_dir = tmp_path / ".projio" / "codio"

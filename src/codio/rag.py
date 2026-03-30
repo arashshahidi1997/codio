@@ -10,6 +10,21 @@ CODIO_NOTES_SOURCE_ID = "codio-notes"
 CODIO_CATALOG_SOURCE_ID = "codio-catalog"
 CODIO_SRC_PREFIX = "codio-src-"
 
+# Maps catalog ``language`` field values to source-tree glob patterns.
+# Languages not in this mapping fall back to ``**/*`` (all files).
+_LANGUAGE_GLOB: dict[str, str] = {
+    "python": "**/*.py",
+    "matlab": "**/*.m",
+    "r": "**/*.R",
+    "julia": "**/*.jl",
+    "javascript": "**/*.js",
+    "typescript": "**/*.ts",
+    "c": "**/*.c",
+    "cpp": "**/*.cpp",
+    "java": "**/*.java",
+}
+_DEFAULT_SOURCE_GLOB = "**/*"
+
 
 @dataclass(frozen=True)
 class CodioRagSyncResult:
@@ -41,6 +56,9 @@ def owned_codio_sources(
 
     When *catalog* is provided (dict of name -> LibraryCatalogEntry),
     source trees for libraries with non-empty ``path`` fields are included.
+    The glob pattern for each source tree is derived from the library's
+    ``language`` field (e.g. ``**/*.py`` for Python, ``**/*.m`` for MATLAB).
+    Libraries with unknown or missing languages fall back to ``**/*``.
     """
     sources: list[dict[str, object]] = [
         {
@@ -62,10 +80,12 @@ def owned_codio_sources(
             lib_path = config.project_root / entry.path
             if not lib_path.exists():
                 continue
+            lang = (getattr(entry, "language", "") or "").lower()
+            glob_pat = _LANGUAGE_GLOB.get(lang, _DEFAULT_SOURCE_GLOB)
             sources.append({
                 "id": _source_id_for_library(name),
                 "corpus": "codelib",
-                "glob": str(lib_path / "**/*.py"),
+                "glob": str(lib_path / glob_pat),
                 "metadata": {"library": name, "kind": entry.kind},
             })
 
@@ -94,6 +114,17 @@ def sync_codio_rag_sources(
 
     When *catalog* is provided, source trees for libraries with local
     paths are included alongside the standard notes and catalog sources.
+    Source-tree glob patterns are language-dependent (see
+    :func:`owned_codio_sources`).
+
+    *config_path* should point to the same indexio config used by
+    ``indexio_build`` and ``rag_query`` — typically the path declared under
+    ``indexio.config`` in ``.projio/config.yml``.  Callers (including the
+    MCP tool) are responsible for resolving this path from the projio
+    project config rather than relying on the built-in default.  The
+    default fallback (``infra/indexio/config.yaml``) exists only for
+    backwards compatibility and may not match the project's actual config
+    location.
 
     Raises ``ImportError`` if the indexio package is not installed.
     """
