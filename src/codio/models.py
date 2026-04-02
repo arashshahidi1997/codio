@@ -10,6 +10,7 @@ from codio.vocab import (
     Hosting,
     Kind,
     Priority,
+    Role,
     RuntimeImport,
     SourceType,
     Status,
@@ -29,6 +30,7 @@ class LibraryCatalogEntry(BaseModel):
 
     name: str = Field(..., description="Library slug key")
     kind: Kind = Field(..., description="Identity class")
+    role: str = Field(default="", description="Project role: core, shared, or external")
     language: str = Field(default="", description="Dominant language")
     repo_url: str = Field(default="", description="Upstream repo URL")
     pip_name: str = Field(default="", description="Package manager name")
@@ -85,6 +87,7 @@ class LibraryRecord(BaseModel):
 
     # catalog fields
     kind: Kind = Field(..., description="Identity class")
+    role: str = Field(default="", description="Project role: core, shared, or external")
     language: str = Field(default="", description="Dominant language")
     repo_url: str = Field(default="", description="Upstream repo URL")
     pip_name: str = Field(default="", description="Package manager name")

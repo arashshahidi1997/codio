@@ -1,5 +1,5 @@
 from __future__ import annotations
-from codio.vocab import Kind, RuntimeImport, DecisionDefault, Priority, Status, get_vocab
+from codio.vocab import Kind, Role, RuntimeImport, DecisionDefault, Priority, Status, get_vocab
 
 
 def test_kind_values():
@@ -22,6 +22,10 @@ def test_status_values():
     assert set(Status) == {Status.active, Status.candidate, Status.deprecated}
 
 
+def test_role_values():
+    assert set(Role) == {Role.core, Role.shared, Role.external}
+
+
 def test_enum_descriptions():
     assert Kind.internal.description != ""
     assert RuntimeImport.pip_only.description != ""
@@ -30,7 +34,7 @@ def test_enum_descriptions():
 def test_get_vocab_structure():
     vocab = get_vocab()
     assert set(vocab.keys()) == {
-        "kind", "runtime_import", "decision_default", "priority", "status",
+        "kind", "role", "runtime_import", "decision_default", "priority", "status",
         "storage", "hosting", "source_type", "added_by",
     }
     for field_name, field_data in vocab.items():

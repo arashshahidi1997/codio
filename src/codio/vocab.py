@@ -96,6 +96,14 @@ class SourceType(_DescribedEnum):
     config = ("config", "Configuration files")
 
 
+class Role(_DescribedEnum):
+    """Project role for a library — governs agent write access and promotion targets."""
+
+    core = ("core", "Project's own compute library; agents may add code here")
+    shared = ("shared", "Lab/org library used as-is; agents should not modify")
+    external = ("external", "External package (PyPI/conda); never modified locally")
+
+
 class AddedBy(_DescribedEnum):
     """How a registry entry was added."""
 
@@ -110,6 +118,7 @@ class AddedBy(_DescribedEnum):
 
 _VOCABS: dict[str, type[_DescribedEnum]] = {
     "kind": Kind,
+    "role": Role,
     "runtime_import": RuntimeImport,
     "decision_default": DecisionDefault,
     "priority": Priority,

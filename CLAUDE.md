@@ -48,9 +48,12 @@ Profile entries must reference existing catalog keys.
 
 Fields use controlled values (see `src/codio/vocab.py`):
 - `kind`: `internal`, `external_mirror`, `utility`
+- `role`: `core` (project's compute library, agents may add code), `shared` (lab library, used as-is), `external` (PyPI, never modified)
 - `runtime_import`: `internal`, `pip_only`, `reference_only`
 - `decision_default`: `existing`, `wrap`, `direct`, `new`
 - `priority`: `tier1`, `tier2`, etc.
+
+The `role` field governs agent write access and is the key policy field for code tier integration. `projio sync` auto-registers `code/lib/*/` libraries with `role: core`.
 
 ### Layered Architecture (bottom to top)
 

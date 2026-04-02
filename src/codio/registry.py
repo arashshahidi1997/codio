@@ -30,10 +30,19 @@ from codio.vocab import (
 # ---------------------------------------------------------------------------
 
 
+_PROFILE_ONLY_FIELDS = frozenset({
+    "priority", "runtime_import", "decision_default",
+    "curated_note", "capabilities", "status", "notes",
+})
+
+_CATALOG_FIELDS = frozenset(LibraryCatalogEntry.model_fields.keys())
+
+
 def load_catalog(path: Path) -> dict[str, LibraryCatalogEntry]:
     """Read a YAML catalog file and return entries keyed by library name.
 
     Returns an empty dict when *path* does not exist.
+    Warns when catalog entries contain profile-only fields (e.g. runtime_import).
     """
     if not path.exists():
         return {}
@@ -48,7 +57,19 @@ def load_catalog(path: Path) -> dict[str, LibraryCatalogEntry]:
     for name, fields in raw["libraries"].items():
         if not isinstance(fields, dict):
             continue
-        entries[name] = LibraryCatalogEntry(name=name, **fields)
+        # Warn about profile-only fields appearing in the catalog
+        misplaced = set(fields) & _PROFILE_ONLY_FIELDS
+        if misplaced:
+            import warnings
+            warnings.warn(
+                f"catalog entry '{name}': fields {sorted(misplaced)} belong in "
+                f"profiles.yml, not catalog.yml — they will be ignored. "
+                f"Move them to .projio/codio/profiles.yml (or .codio/profiles.yml).",
+                stacklevel=2,
+            )
+        # Filter to catalog-only fields so Pydantic doesn't silently drop them
+        catalog_fields = {k: v for k, v in fields.items() if k in _CATALOG_FIELDS}
+        entries[name] = LibraryCatalogEntry(name=name, **catalog_fields)
     return entries
 
 
