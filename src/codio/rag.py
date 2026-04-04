@@ -48,6 +48,22 @@ def resolve_source_id(source_id: str) -> str | None:
     return None
 
 
+def _load_repos(config: CodioConfig) -> dict[str, dict]:
+    """Load repos.yml and return repo_id -> repo_info mapping."""
+    if not config.repos_path.exists():
+        return {}
+    import yaml
+    with open(config.repos_path) as fh:
+        data = yaml.safe_load(fh)
+    if not isinstance(data, dict):
+        return {}
+    return data.get("repositories") or {}
+
+
+# For notebook/doc-heavy repos, use a broad glob.
+_NOTEBOOK_GLOB = "**/*.{py,ipynb,md}"
+
+
 def owned_codio_sources(
     config: CodioConfig,
     catalog: dict | None = None,
@@ -59,6 +75,9 @@ def owned_codio_sources(
     The glob pattern for each source tree is derived from the library's
     ``language`` field (e.g. ``**/*.py`` for Python, ``**/*.m`` for MATLAB).
     Libraries with unknown or missing languages fall back to ``**/*``.
+
+    Cloned mirrors (from repos.yml) are also registered when their
+    ``local_path`` exists on disk, even if the catalog entry has no ``path``.
     """
     sources: list[dict[str, object]] = [
         {
@@ -73,31 +92,64 @@ def owned_codio_sources(
         },
     ]
 
+    # Build repo_id -> local_path lookup from repos.yml
+    repos = _load_repos(config)
+    repo_id_to_path: dict[str, Path] = {}
+    for repo_id, info in repos.items():
+        lp = info.get("local_path")
+        if lp:
+            full = config.project_root / lp
+            if full.exists():
+                repo_id_to_path[repo_id] = full
+
+    registered_names: set[str] = set()
+
     if catalog:
         for name, entry in catalog.items():
-            if not entry.path:
-                continue
-            lib_path = config.project_root / entry.path
-            if not lib_path.exists():
-                continue
             lang = (getattr(entry, "language", "") or "").lower()
             glob_pat = _LANGUAGE_GLOB.get(lang, _DEFAULT_SOURCE_GLOB)
-            sources.append({
-                "id": _source_id_for_library(name),
-                "corpus": "codelib",
-                "glob": str(lib_path / glob_pat),
-                "metadata": {"library": name, "kind": entry.kind},
-            })
+
+            # Prefer explicit path from catalog
+            if entry.path:
+                lib_path = config.project_root / entry.path
+                if not lib_path.exists():
+                    continue
+                sources.append({
+                    "id": _source_id_for_library(name),
+                    "corpus": "codelib",
+                    "glob": str(lib_path / glob_pat),
+                    "metadata": {"library": name, "kind": entry.kind},
+                })
+                registered_names.add(name)
+                continue
+
+            # Fall back to cloned mirror via repo_id
+            repo_id = getattr(entry, "repo_id", None) or ""
+            if repo_id and repo_id in repo_id_to_path:
+                mirror_path = repo_id_to_path[repo_id]
+                # Notebook-heavy repos get a broader glob
+                if lang in ("jupyter notebook", ""):
+                    glob_pat = _NOTEBOOK_GLOB
+                sources.append({
+                    "id": _source_id_for_library(name),
+                    "corpus": "codelib",
+                    "glob": str(mirror_path / glob_pat),
+                    "metadata": {"library": name, "kind": entry.kind},
+                })
+                registered_names.add(name)
 
     return sources
 
 
-def owned_source_ids(catalog: dict | None = None) -> list[str]:
+def owned_source_ids(catalog: dict | None = None, config: CodioConfig | None = None) -> list[str]:
     """Return all codio-owned source IDs (for sync_owned_sources)."""
     ids = [CODIO_NOTES_SOURCE_ID, CODIO_CATALOG_SOURCE_ID]
     if catalog:
+        repos = _load_repos(config) if config else {}
         for name, entry in catalog.items():
             if entry.path:
+                ids.append(_source_id_for_library(name))
+            elif getattr(entry, "repo_id", None) and (getattr(entry, "repo_id", "") in repos):
                 ids.append(_source_id_for_library(name))
     return ids
 
@@ -145,7 +197,7 @@ def sync_codio_rag_sources(
     result = sync_owned_sources(
         config_path,
         root=project_root,
-        owned_source_ids=owned_source_ids(catalog),
+        owned_source_ids=owned_source_ids(catalog, config),
         sources=owned_codio_sources(config, catalog),
         force_init=force_init,
     )
