@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "codio-tools"
-version = "0.1.0"
+version = "0.1.1"
 description = "Code intelligence and reuse discovery for research repositories"
 readme = "README.md"
 requires-python = ">=3.11"
-authors = [{ name = "Arash Shahidi" }]
+authors = [{ name = "Arash Shahidi", email = "A.Shahidi@campus.lmu.de" }]
 license = "MIT"
 license-files = ["LICENSE"]
 keywords = ["code", "reuse", "discovery", "library", "registry", "intelligence"]
@@ -19,6 +19,7 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Information Analysis",
     "Topic :: Software Development :: Libraries",
 ]
@@ -26,6 +27,7 @@ dependencies = ["pyyaml>=6.0", "pydantic>=2.0"]
 
 [project.urls]
 Homepage = "https://github.com/arashshahidi1997/codio"
+Documentation = "https://arashshahidi1997.github.io/codio/"
 Repository = "https://github.com/arashshahidi1997/codio"
 Issues = "https://github.com/arashshahidi1997/codio/issues"
 
