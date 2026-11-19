@@ -81,10 +81,12 @@ def test_owned_codio_sources_unknown_language_glob(tmp_path):
     assert str(src_source["glob"]).endswith("**/*")
 
 
-def test_sync_requires_indexio(tmp_path):
+def test_sync_requires_indexio(tmp_path, monkeypatch):
     """sync_codio_rag_sources raises ImportError when indexio is missing."""
+    import sys
     config = _make_config(tmp_path)
     from codio.rag import sync_codio_rag_sources
-    # indexio is not installed in the test environment, so this should raise
+    # Hide indexio even when it is installed (e.g. the projio env).
+    monkeypatch.setitem(sys.modules, "indexio", None)
     with pytest.raises(ImportError, match="indexio"):
         sync_codio_rag_sources(tmp_path, config=config)
