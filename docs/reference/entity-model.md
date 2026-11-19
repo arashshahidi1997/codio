@@ -163,6 +163,7 @@ from any library it contains.
 | `storage`     | `str`  | `managed`, `attached`, `external`                |
 | `local_path`  | `str`  | Filesystem path when cloned locally              |
 | `default_branch` | `str` | e.g. `main`, `master`                          |
+| `ref`            | `str` | Pinned commit of a managed mirror (set by `codio mirror sync`) |
 
 **Rationale:** The current model conflates repository identity with library
 identity. A repository may contain multiple importable libraries (monorepo), or
@@ -343,9 +344,12 @@ data it references (reads, links to, does not modify).
 Two storage modes for repositories with local clones:
 
 - **Managed:** Codio cloned this repository and is responsible for keeping it
-  updated. The `storage` field is `managed`. Sync commands (`codio sync`) pull
-  upstream changes. The local path is deterministic (e.g.
-  `.codio/mirrors/<repo_id>/`).
+  updated. The `storage` field is `managed`. The local path is deterministic
+  (`.projio/codio/mirrors/<repo_id>/`) and gitignored: a mirror is never
+  committed to the project repository, as a submodule or otherwise.
+  `repos.yml` keeps `url`, `default_branch` and the pinned `ref`, so
+  `codio mirror sync` rebuilds every mirror on a fresh clone;
+  `codio mirror sync --update` (alias `codio sync`) pulls and re-pins.
 - **Attached:** The repository already exists on the filesystem (e.g. a sibling
   project, a git submodule, a manually cloned directory). Codio records the
   path but does not clone or pull. The `storage` field is `attached`.

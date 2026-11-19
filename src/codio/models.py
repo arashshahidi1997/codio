@@ -164,6 +164,10 @@ class RepositoryEntry(BaseModel):
     storage: Storage = Field(default=Storage.external, description="Storage mode")
     local_path: str = Field(default="", description="Filesystem path when cloned locally")
     default_branch: str = Field(default="main", description="Default branch name")
+    ref: str = Field(
+        default="",
+        description="Pinned commit for managed mirrors; `codio mirror sync` clones at this ref",
+    )
 
 
 # ---------------------------------------------------------------------------

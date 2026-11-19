@@ -77,6 +77,8 @@ codio discover   — search for libraries matching a capability
 codio study      — structured analysis of a library
 codio compare    — compare multiple libraries
 codio rag sync   — register codio sources in indexio
+codio clone      — clone a repo as a managed mirror (records url + pinned ref)
+codio mirror sync [--update] — restore missing mirrors at their pinned ref; --update pulls and re-pins
 ```
 
 ### MCP Tool Surface

@@ -227,12 +227,17 @@ repositories:
     storage: managed
     local_path: .codio/mirrors/scipy--scipy
     default_branch: main
+    ref: 3f2c9e1d...   # pinned commit, recorded by codio clone / codio mirror sync
 ```
 
-### 3.4 `.codio/mirrors/<repo_id>/` (managed only)
+### 3.4 `.projio/codio/mirrors/<repo_id>/` (managed only)
 
 The cloned repository directory.  Codio owns this directory and may delete
-and re-clone it.  Should be added to `.gitignore`.
+and re-clone it.  It is gitignored and must never be committed to the project
+repository (not even as a submodule: that makes every clone of the project
+carry the third-party repos).  On a fresh clone, `codio mirror sync` restores
+each mirror from `url` at `ref`; it warns about any mirror it finds committed
+in the project repository.
 
 ### 3.5 Indexio source registration
 

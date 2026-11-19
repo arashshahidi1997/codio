@@ -71,3 +71,46 @@ codio rag sync
 ```
 
 This registers the catalog and curated notes as indexio corpus sources so they are searchable via `rag_query`.
+
+## Restore and update managed mirrors
+
+Managed mirrors (`storage: managed` in `repos.yml`) are local clones under
+`.projio/codio/mirrors/`, which is gitignored. The project repository keeps
+only `url`, `default_branch` and the pinned commit `ref`. After cloning a
+project, restore them:
+
+```bash
+codio mirror sync
+```
+
+This clones every missing mirror at its pinned `ref` and records a `ref` for
+any mirror that has none. To pull upstream changes and re-pin:
+
+```bash
+codio mirror sync --update
+```
+
+Commit the changed `repos.yml` to share the new pins. A mirror whose HEAD
+differs from its pin is reported as `drift`.
+
+### Mirrors committed as submodules
+
+`codio mirror sync` warns when a mirror is committed in the project
+repository (usually as a submodule picked up by `git add` or
+`datalad save`). Move it back to the working tree only; the clone on disk
+stays as it is:
+
+```bash
+codio mirror sync                      # records each mirror's ref first
+git add .projio/codio/repos.yml
+paths=$(git ls-files -s .projio/codio/mirrors | awk '{print $4}')
+for p in $paths; do
+  git config -f .gitmodules --remove-section "submodule.$p"
+  git config --remove-section "submodule.$p" 2>/dev/null
+done
+git add .gitmodules                    # git rm refuses while .gitmodules is unstaged
+for p in $paths; do git rm --cached -q "$p"; done
+git commit -m "chore(codio): mirrors as gitignored local clones"
+```
+
+Make sure `.projio/codio/mirrors/` is in `.gitignore` (`projio sync` adds it).

@@ -110,10 +110,33 @@ def _build_parser() -> argparse.ArgumentParser:
     p_clone.add_argument("--json", dest="as_json", action="store_true")
 
     # --- sync ---------------------------------------------------------------
-    p_sync = sub.add_parser("sync", help="Pull updates for managed mirrors")
+    p_sync = sub.add_parser(
+        "sync", help="Pull updates for managed mirrors (same as `mirror sync --update`)",
+    )
     p_sync.add_argument("repo_id", nargs="?", default=None, help="Specific repo to sync")
     p_sync.add_argument("--root", type=Path, default=None)
     p_sync.add_argument("--json", dest="as_json", action="store_true")
+
+    # --- mirror -------------------------------------------------------------
+    p_mirror = sub.add_parser(
+        "mirror", help="Managed mirrors: gitignored local clones restored from repos.yml",
+    )
+    mirror_sub = p_mirror.add_subparsers(dest="mirror_command")
+    m_sync = mirror_sub.add_parser(
+        "sync",
+        help="Clone missing mirrors at their pinned ref; pin mirrors that have none",
+    )
+    m_sync.add_argument("repo_id", nargs="?", default=None, help="Specific repo to sync")
+    m_sync.add_argument(
+        "--update", action="store_true",
+        help="Also pull existing mirrors and pin the new HEAD",
+    )
+    m_sync.add_argument(
+        "--shallow", action="store_true",
+        help="Shallow-clone mirrors that have no pinned ref",
+    )
+    m_sync.add_argument("--root", type=Path, default=None)
+    m_sync.add_argument("--json", dest="as_json", action="store_true")
 
     # --- repos --------------------------------------------------------------
     p_repos = sub.add_parser("repos", help="List tracked repositories")
@@ -456,57 +479,63 @@ def _cmd_clone(args: argparse.Namespace) -> None:
             shutil.rmtree(clone_dir)
         raise SystemExit(1)
 
+    from codio.mirrors import head_ref
+
+    entry.ref = head_ref(clone_dir)
+    repos[repo_id] = entry
+    save_repos(config.repos_path, repos)
+
     if args.as_json:
-        _json_out({"cloned": repo_id, "path": str(clone_dir)})
+        _json_out({"cloned": repo_id, "path": str(clone_dir), "ref": entry.ref})
     else:
         print(f"Cloned '{repo_id}' into {clone_dir}")
 
 
-def _cmd_sync(args: argparse.Namespace) -> None:
-    import subprocess
+def _run_mirror_sync(args: argparse.Namespace, *, update: bool, shallow: bool) -> None:
+    from codio.config import load_config
+    from codio.mirrors import sync_mirrors
 
-    root = _resolve_root(args)
-    registry = _make_registry(root)
-    repos = registry.list_repos(storage="managed")
-
-    if args.repo_id:
-        repos = [r for r in repos if r.repo_id == args.repo_id]
-        if not repos:
-            print(f"No managed repo '{args.repo_id}' found.", file=sys.stderr)
-            raise SystemExit(1)
-
-    if not repos:
-        print("No managed repositories to sync.")
-        return
-
-    results = []
-    for repo in repos:
-        if not repo.local_path:
-            continue
-        repo_path = registry._config.project_root / repo.local_path
-        if not repo_path.exists():
-            results.append({"repo_id": repo.repo_id, "status": "missing"})
-            continue
-        try:
-            subprocess.run(
-                ["git", "-C", str(repo_path), "pull", "--ff-only"],
-                check=True, capture_output=True, text=True,
-            )
-            results.append({"repo_id": repo.repo_id, "status": "synced"})
-        except subprocess.CalledProcessError as exc:
-            results.append({"repo_id": repo.repo_id, "status": "failed", "error": exc.stderr.strip()})
+    config = load_config(_resolve_root(args))
+    try:
+        results = sync_mirrors(config, args.repo_id, update=update, shallow=shallow)
+    except KeyError as exc:
+        print(exc.args[0], file=sys.stderr)
+        raise SystemExit(1)
 
     if args.as_json:
         _json_out(results)
+    elif not results:
+        print("No managed repositories to sync.")
     else:
         for r in results:
-            status = r["status"]
-            if status == "synced":
-                print(f"  {r['repo_id']}: synced")
-            elif status == "missing":
-                print(f"  {r['repo_id']}: local path missing")
-            else:
-                print(f"  {r['repo_id']}: failed — {r.get('error', '')}")
+            line = f"  {r['repo_id']}: {r['status']}"
+            if r.get("ref"):
+                line += f" @ {str(r['ref'])[:12]}"
+            if r["status"] == "drift":
+                line += f" (HEAD {str(r['head'])[:12]}; --update re-pins)"
+            if r.get("error"):
+                line += f" - {r['error']}"
+            print(line)
+        tracked = [r["repo_id"] for r in results if r.get("tracked_in_parent")]
+        if tracked:
+            print(
+                "warning: committed in the project repo (mirrors belong in the "
+                f"gitignored working tree only): {', '.join(tracked)}",
+                file=sys.stderr,
+            )
+    if any(r["status"] == "failed" for r in results):
+        raise SystemExit(1)
+
+
+def _cmd_sync(args: argparse.Namespace) -> None:
+    _run_mirror_sync(args, update=True, shallow=False)
+
+
+def _cmd_mirror(args: argparse.Namespace) -> None:
+    if args.mirror_command == "sync":
+        _run_mirror_sync(args, update=args.update, shallow=args.shallow)
+    else:
+        _build_parser().parse_args(["mirror", "--help"])
 
 
 def _cmd_repos(args: argparse.Namespace) -> None:
@@ -578,6 +607,7 @@ _COMMANDS = {
     "attach": _cmd_attach,
     "clone": _cmd_clone,
     "sync": _cmd_sync,
+    "mirror": _cmd_mirror,
     "repos": _cmd_repos,
     "rag": _cmd_rag,
 }
